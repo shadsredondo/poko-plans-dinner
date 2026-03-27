@@ -126,11 +126,10 @@ const Index = () => {
 
       {/* Chat Area */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-6 space-y-4 max-w-lg mx-auto w-full">
-        <AnimatePresence mode="wait">
           {/* Welcome */}
           {step === "welcome" && (
             <motion.div key="welcome" className="flex flex-col items-center text-center pt-12 space-y-6"
-              initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+              initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
               <PokoAvatar size="xl" expression="wink" />
               <div className="space-y-2">
                 <h1 className="font-display text-2xl font-bold text-foreground">
@@ -151,39 +150,28 @@ const Index = () => {
             </motion.div>
           )}
 
-          {/* Guests */}
-          {(step === "guests" || (step !== "welcome" && step !== "guests" && guests)) && step !== "welcome" && (
-            <motion.div key="guests-q" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <ChatBubble message="How many people are we feeding? 🍽️" sender="poko" expression="thinking" />
-            </motion.div>
+          {/* Guests question - show once we're past welcome */}
+          {step !== "welcome" && (
+            <ChatBubble message="How many people are we feeding? 🍽️" sender="poko" expression="thinking" />
           )}
+          {/* Guests answer */}
           {guests && step !== "welcome" && (
-            <motion.div key="guests-a" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <ChatBubble message={`${guests} people`} sender="user" />
-            </motion.div>
+            <ChatBubble message={`${guests} people`} sender="user" />
           )}
 
-          {/* Ingredients */}
-          {(step === "ingredients" || (step !== "welcome" && step !== "guests" && ingredients)) && step !== "welcome" && step !== "guests" && !ingredients && (
-            <motion.div key="ing-q" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-              <ChatBubble message="What's in your fridge right now — don't overthink it. Just list whatever you've got! 🧊" sender="poko" expression="happy" delay={0.2} />
-            </motion.div>
+          {/* Ingredients question */}
+          {step !== "welcome" && step !== "guests" && (
+            <ChatBubble message="What's in your fridge right now — don't overthink it. Just list whatever you've got! 🧊" sender="poko" expression="happy" />
           )}
-          {ingredients && step !== "welcome" && (
-            <>
-              <motion.div key="ing-q2" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                <ChatBubble message="What's in your fridge right now — don't overthink it. Just list whatever you've got! 🧊" sender="poko" expression="happy" />
-              </motion.div>
-              <motion.div key="ing-a" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                <ChatBubble message={ingredients} sender="user" />
-              </motion.div>
-            </>
+          {/* Ingredients answer */}
+          {ingredients && (
+            <ChatBubble message={ingredients} sender="user" />
           )}
 
           {/* Effort */}
           {step === "effort" && (
-            <motion.div key="effort-q" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-              <ChatBubble message="Be honest… how much effort are we putting in today? 💪" sender="poko" expression="wink" delay={0.2} />
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <ChatBubble message="Be honest… how much effort are we putting in today? 💪" sender="poko" expression="wink" />
               <div className="mt-3 space-y-2 pl-11">
                 {effortOptions.map((opt) => (
                   <motion.button
@@ -200,16 +188,17 @@ const Index = () => {
               </div>
             </motion.div>
           )}
-          {effort && step !== "effort" && step !== "welcome" && (
-            <motion.div key="effort-a" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          {effort && step !== "effort" && (
+            <>
+              <ChatBubble message="Be honest… how much effort are we putting in today? 💪" sender="poko" expression="wink" />
               <ChatBubble message={effortOptions.find(o => o.value === effort)?.label || effort} sender="user" />
-            </motion.div>
+            </>
           )}
 
           {/* Cuisine */}
           {step === "cuisine" && (
-            <motion.div key="cuisine-q" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-              <ChatBubble message="Any vibe? Or should I surprise you? 🌍" sender="poko" expression="excited" delay={0.2} />
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <ChatBubble message="Any vibe? Or should I surprise you? 🌍" sender="poko" expression="excited" />
               <div className="mt-3 flex flex-wrap gap-2 pl-11">
                 {cuisineOptions.map((opt) => (
                   <motion.button
@@ -228,7 +217,7 @@ const Index = () => {
 
           {/* Generating */}
           {step === "generating" && (
-            <motion.div key="generating" className="flex flex-col items-center py-12 space-y-4"
+            <motion.div className="flex flex-col items-center py-12 space-y-4"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <motion.div
                 animate={{ rotate: 360 }}
@@ -245,13 +234,13 @@ const Index = () => {
 
           {/* Results */}
           {step === "results" && menu && (
-            <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <MenuResults menu={menu} />
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.6 }}
-                className="flex justify-center pt-4"
+                className="flex justify-center pt-4 pb-6"
               >
                 <button
                   onClick={handleReset}
@@ -262,7 +251,6 @@ const Index = () => {
               </motion.div>
             </motion.div>
           )}
-        </AnimatePresence>
       </div>
 
       {/* Input Area */}
