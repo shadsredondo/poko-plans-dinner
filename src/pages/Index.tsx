@@ -130,7 +130,7 @@ const Index = () => {
           {step === "welcome" && (
             <motion.div key="welcome" className="flex flex-col items-center text-center pt-12 space-y-6"
               initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
-              <PokoAvatar size="xl" expression="wink" />
+              <PokoAvatar size="xl" />
               <div className="space-y-2">
                 <h1 className="font-display text-2xl font-bold text-foreground">
                   Hi, I'm Poko 👀
@@ -223,7 +223,7 @@ const Index = () => {
                 animate={{ rotate: 360 }}
                 transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
               >
-                <PokoAvatar size="lg" expression="thinking" animate={false} />
+                <PokoAvatar size="lg" animate={false} />
               </motion.div>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Loader2 className="w-4 h-4 animate-spin" />
