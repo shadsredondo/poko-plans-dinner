@@ -4,11 +4,10 @@ import PokoAvatar from "./PokoAvatar";
 interface ChatBubbleProps {
   message: string;
   sender: "poko" | "user";
-  expression?: "happy" | "thinking" | "excited" | "wink";
   delay?: number;
 }
 
-const ChatBubble = ({ message, sender, expression = "happy", delay = 0 }: ChatBubbleProps) => {
+const ChatBubble = ({ message, sender, delay = 0 }: ChatBubbleProps) => {
   const isPoko = sender === "poko";
 
   return (
@@ -18,7 +17,7 @@ const ChatBubble = ({ message, sender, expression = "happy", delay = 0 }: ChatBu
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay }}
     >
-      {isPoko && <PokoAvatar size="sm" expression={expression} />}
+      {isPoko && <PokoAvatar size="sm" />}
       <div
         className={`max-w-[80%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
           isPoko

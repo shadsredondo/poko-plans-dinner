@@ -41,7 +41,7 @@ const courseLabels: Record<string, string> = {
 const MenuResults = ({ menu }: { menu: MenuData }) => {
   return (
     <div className="space-y-4">
-      <ChatBubble message={menu.pokoReaction} sender="poko" expression="excited" />
+      <ChatBubble message={menu.pokoReaction} sender="poko" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
