@@ -152,7 +152,7 @@ const Index = () => {
 
           {/* Guests question - show once we're past welcome */}
           {step !== "welcome" && (
-            <ChatBubble message="How many people are we feeding? 🍽️" sender="poko" expression="thinking" />
+            <ChatBubble message="How many people are we feeding? 🍽️" sender="poko" />
           )}
           {/* Guests answer */}
           {guests && step !== "welcome" && (
@@ -161,7 +161,7 @@ const Index = () => {
 
           {/* Ingredients question */}
           {step !== "welcome" && step !== "guests" && (
-            <ChatBubble message="What's in your fridge right now — don't overthink it. Just list whatever you've got! 🧊" sender="poko" expression="happy" />
+            <ChatBubble message="What's in your fridge right now — don't overthink it. Just list whatever you've got! 🧊" sender="poko" />
           )}
           {/* Ingredients answer */}
           {ingredients && (
@@ -171,7 +171,7 @@ const Index = () => {
           {/* Effort */}
           {step === "effort" && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <ChatBubble message="Be honest… how much effort are we putting in today? 💪" sender="poko" expression="wink" />
+              <ChatBubble message="Be honest… how much effort are we putting in today? 💪" sender="poko" />
               <div className="mt-3 space-y-2 pl-11">
                 {effortOptions.map((opt) => (
                   <motion.button
@@ -190,7 +190,7 @@ const Index = () => {
           )}
           {effort && step !== "effort" && (
             <>
-              <ChatBubble message="Be honest… how much effort are we putting in today? 💪" sender="poko" expression="wink" />
+              <ChatBubble message="Be honest… how much effort are we putting in today? 💪" sender="poko" />
               <ChatBubble message={effortOptions.find(o => o.value === effort)?.label || effort} sender="user" />
             </>
           )}
@@ -198,7 +198,7 @@ const Index = () => {
           {/* Cuisine */}
           {step === "cuisine" && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <ChatBubble message="Any vibe? Or should I surprise you? 🌍" sender="poko" expression="excited" />
+              <ChatBubble message="Any vibe? Or should I surprise you? 🌍" sender="poko" />
               <div className="mt-3 flex flex-wrap gap-2 pl-11">
                 {cuisineOptions.map((opt) => (
                   <motion.button

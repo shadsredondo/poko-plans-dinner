@@ -7,7 +7,7 @@ interface ChatBubbleProps {
   delay?: number;
 }
 
-const ChatBubble = ({ message, sender, expression = "happy", delay = 0 }: ChatBubbleProps) => {
+const ChatBubble = ({ message, sender, delay = 0 }: ChatBubbleProps) => {
   const isPoko = sender === "poko";
 
   return (
