@@ -1,26 +1,19 @@
 import { motion } from "framer-motion";
+import pokoImg from "@/assets/poko-avatar.png";
 
 interface PokoAvatarProps {
   size?: "sm" | "md" | "lg" | "xl";
   animate?: boolean;
-  expression?: "happy" | "thinking" | "excited" | "wink";
 }
 
 const sizeMap = {
-  sm: "w-8 h-8 text-lg",
-  md: "w-12 h-12 text-2xl",
-  lg: "w-16 h-16 text-3xl",
-  xl: "w-24 h-24 text-5xl",
+  sm: "w-8 h-8",
+  md: "w-12 h-12",
+  lg: "w-16 h-16",
+  xl: "w-24 h-24",
 };
 
-const expressionMap = {
-  happy: "😊",
-  thinking: "🤔",
-  excited: "🎉",
-  wink: "😉",
-};
-
-const PokoAvatar = ({ size = "md", animate = true, expression = "happy" }: PokoAvatarProps) => {
+const PokoAvatar = ({ size = "md", animate = true }: PokoAvatarProps) => {
   const Wrapper = animate ? motion.div : "div";
   const animateProps = animate
     ? {
@@ -32,12 +25,10 @@ const PokoAvatar = ({ size = "md", animate = true, expression = "happy" }: PokoA
 
   return (
     <Wrapper
-      className={`${sizeMap[size]} bg-poko rounded-full flex items-center justify-center shadow-lg`}
+      className={`${sizeMap[size]} rounded-full overflow-hidden flex items-center justify-center shadow-lg bg-white`}
       {...animateProps}
     >
-      <span role="img" aria-label={`Poko is ${expression}`}>
-        {expressionMap[expression]}
-      </span>
+      <img src={pokoImg} alt="Poko" className="w-full h-full object-cover" />
     </Wrapper>
   );
 };
