@@ -4,7 +4,6 @@ import PokoAvatar from "./PokoAvatar";
 interface ChatBubbleProps {
   message: string;
   sender: "poko" | "user";
-  expression?: "happy" | "thinking" | "excited" | "wink";
   delay?: number;
 }
 
