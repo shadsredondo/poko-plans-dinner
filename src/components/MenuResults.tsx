@@ -161,12 +161,19 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
                     ))}
                   </div>
                 </div>
-                {/* Per-dish savings */}
-                {course.pantrySavings != null && course.pantrySavings > 0 && (
-                  <span className="mt-3 text-[11px] text-secondary font-semibold self-start">
-                    Saved ~${course.pantrySavings} using your pantry
-                  </span>
-                )}
+                {/* Per-dish cost & savings */}
+                <div className="mt-3 flex flex-col gap-0.5">
+                  {course.estimatedCost != null && (
+                    <span className="text-[11px] text-muted-foreground font-medium">
+                      Est. ~${course.estimatedCost}
+                    </span>
+                  )}
+                  {course.pantrySavings != null && course.pantrySavings > 0 && (
+                    <span className="text-[11px] text-secondary font-semibold">
+                      Saved ~${course.pantrySavings} from your pantry
+                    </span>
+                  )}
+                </div>
               </motion.div>
             );
           })}
