@@ -9,7 +9,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { guests, ingredients, effort, cuisine } = await req.json();
+    const { guests, ingredients, effort, skill, cuisine } = await req.json();
     
     if (!ingredients || !guests) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
@@ -24,12 +24,18 @@ serve(async (req) => {
 
 Your job: Given a list of ingredients someone already has, the number of guests, their effort level, and an optional cuisine vibe, create a brilliant 3-4 course dinner party menu.
 
+You will also receive a cooking skill level (beginner / intermediate / advanced).
+
 Rules:
 - PRIORITIZE using the ingredients they already have
 - Keep the additional shopping list MINIMAL (max 5-7 items)
 - Keep recipes realistic and not overly complex
 - Match complexity to their stated effort level
 - Be playful and encouraging in your commentary
+- Adapt the menu complexity based on cooking skill:
+  - Beginner: very simple dishes, minimal steps, minimal techniques. Prioritize fewer dishes, fewer ingredients, shorter cooking time. Never suggest complex techniques (e.g., slow braising, advanced sauces, tempering chocolate).
+  - Intermediate: moderate complexity, some cooking steps, comfortable with standard techniques
+  - Advanced: more creative, multi-step, restaurant-style elements, advanced techniques welcome
 
 You MUST respond with valid JSON in exactly this format:
 {
@@ -58,6 +64,7 @@ You MUST respond with valid JSON in exactly this format:
 - Guests: ${guests} people
 - Ingredients available: ${ingredients}
 - Effort level: ${effort || "medium"}
+- Cooking skill: ${skill || "intermediate"}
 - Cuisine vibe: ${cuisine || "Surprise me!"}
 
 Create an amazing dinner party menu!`;
