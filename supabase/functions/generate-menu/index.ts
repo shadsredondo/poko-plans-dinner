@@ -76,11 +76,12 @@ Create an amazing dinner party menu!`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
         ],
+        response_format: { type: "json_object" },
       }),
     });
 
@@ -101,16 +102,39 @@ Create an amazing dinner party menu!`;
     }
 
     const data = await response.json();
+    console.log("AI response structure:", JSON.stringify(data).substring(0, 500));
     const content = data.choices?.[0]?.message?.content;
     
-    // Parse JSON from the response (handle markdown code blocks)
+    if (!content) {
+      console.error("No content in AI response. Full response:", JSON.stringify(data).substring(0, 1000));
+      throw new Error("AI returned empty response");
+    }
+
+    // Robust JSON extraction
     let parsed;
     try {
-      const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/) || [null, content];
-      parsed = JSON.parse(jsonMatch[1].trim());
+      // Try direct parse first
+      parsed = JSON.parse(content.trim());
     } catch {
-      console.error("Failed to parse AI response:", content);
-      throw new Error("Failed to parse menu");
+      try {
+        // Try extracting from markdown code blocks
+        const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
+        if (jsonMatch) {
+          parsed = JSON.parse(jsonMatch[1].trim());
+        } else {
+          // Try finding JSON object boundaries
+          const start = content.indexOf('{');
+          const end = content.lastIndexOf('}');
+          if (start !== -1 && end !== -1) {
+            parsed = JSON.parse(content.substring(start, end + 1));
+          } else {
+            throw new Error("No JSON found");
+          }
+        }
+      } catch (e2) {
+        console.error("Failed to parse AI response:", content.substring(0, 500));
+        throw new Error("Failed to parse menu");
+      }
     }
 
     return new Response(JSON.stringify(parsed), {
