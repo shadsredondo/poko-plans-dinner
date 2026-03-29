@@ -7,12 +7,18 @@ import ChatBubble from "@/components/ChatBubble";
 import MenuResults from "@/components/MenuResults";
 import { useToast } from "@/hooks/use-toast";
 
-type Step = "welcome" | "guests" | "ingredients" | "effort" | "cuisine" | "generating" | "results";
+type Step = "welcome" | "guests" | "ingredients" | "effort" | "skill" | "cuisine" | "generating" | "results";
 
 const effortOptions = [
   { label: "Minimal 😴", value: "minimal", desc: "I can barely be bothered" },
   { label: "Moderate 🍳", value: "moderate", desc: "I'll put in some effort" },
   { label: "Go all out 👨‍🍳", value: "high", desc: "Let's impress everyone" },
+];
+
+const skillOptions = [
+  { label: "Pro chef 👨‍🍳", value: "advanced", desc: "I know my way around a kitchen" },
+  { label: "Comfortable home cook 🍳", value: "intermediate", desc: "I can follow a recipe and improvise" },
+  { label: "Assembler 🥪", value: "beginner", desc: "I assemble things and call it cooking" },
 ];
 
 const cuisineOptions = [
@@ -28,6 +34,7 @@ const Index = () => {
   const [guests, setGuests] = useState("");
   const [ingredients, setIngredients] = useState("");
   const [effort, setEffort] = useState("");
+  const [skill, setSkill] = useState("");
   const [cuisine, setCuisine] = useState("");
   const [menu, setMenu] = useState<any>(null);
   const [inputValue, setInputValue] = useState("");
@@ -63,6 +70,11 @@ const Index = () => {
 
   const handleSelectEffort = (val: string) => {
     setEffort(val);
+    setStep("skill");
+  };
+
+  const handleSelectSkill = (val: string) => {
+    setSkill(val);
     setStep("cuisine");
   };
 
@@ -72,7 +84,7 @@ const Index = () => {
 
     try {
       const { data, error } = await supabase.functions.invoke("generate-menu", {
-        body: { guests: Number(guests), ingredients, effort, cuisine: val },
+        body: { guests: Number(guests), ingredients, effort, skill, cuisine: val },
       });
 
       if (error) throw error;
@@ -96,6 +108,7 @@ const Index = () => {
     setGuests("");
     setIngredients("");
     setEffort("");
+    setSkill("");
     setCuisine("");
     setMenu(null);
     setInputValue("");
@@ -192,6 +205,33 @@ const Index = () => {
             <>
               <ChatBubble message="Be honest… how much effort are we putting in today? 💪" sender="poko" />
               <ChatBubble message={effortOptions.find(o => o.value === effort)?.label || effort} sender="user" />
+            </>
+          )}
+
+          {/* Cooking Skill */}
+          {step === "skill" && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <ChatBubble message="What's your cooking level? 👀 Pro chef or more 'I assemble things and call it cooking'?" sender="poko" />
+              <div className="mt-3 space-y-2 pl-11">
+                {skillOptions.map((opt) => (
+                  <motion.button
+                    key={opt.value}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleSelectSkill(opt.value)}
+                    className="w-full text-left bg-card border border-border rounded-xl px-4 py-3 hover:border-primary transition-colors"
+                  >
+                    <span className="font-bold text-foreground">{opt.label}</span>
+                    <span className="text-sm text-muted-foreground ml-2">{opt.desc}</span>
+                  </motion.button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+          {skill && step !== "skill" && (
+            <>
+              <ChatBubble message="What's your cooking level? 👀 Pro chef or more 'I assemble things and call it cooking'?" sender="poko" />
+              <ChatBubble message={skillOptions.find(o => o.value === skill)?.label || skill} sender="user" />
             </>
           )}
 
