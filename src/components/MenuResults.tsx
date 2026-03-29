@@ -1,13 +1,21 @@
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ShoppingCart, ClipboardList, Leaf, ChevronRight } from "lucide-react";
+import { ShoppingCart, ClipboardList, Leaf, ChevronRight, Wallet } from "lucide-react";
+
+interface Ingredient {
+  name: string;
+  fromPantry: boolean;
+  estimatedCost?: number;
+}
 
 interface Course {
   type: string;
   name: string;
   description: string;
-  keyIngredients: string[];
-  fromFridge: boolean;
+  keyIngredients: Ingredient[] | string[];
+  fromFridge?: boolean;
+  estimatedCost?: number;
+  pantrySavings?: number;
 }
 
 interface PlanItem {
@@ -24,6 +32,8 @@ interface MenuData {
   pokoComment?: string;
   pokoReaction?: string;
   pokoTip?: string;
+  totalEstimatedCost?: number;
+  totalPantrySavings?: number;
 }
 
 const courseLabels: Record<string, string> = {
@@ -57,6 +67,13 @@ function getIngredientEmoji(ingredient: string): string {
   return "🥄";
 }
 
+function normalizeIngredient(ing: Ingredient | string): Ingredient {
+  if (typeof ing === "string") {
+    return { name: ing, fromPantry: false };
+  }
+  return ing;
+}
+
 const MenuResults = ({ menu }: { menu: MenuData }) => {
   const planItems = menu.plan || menu.timeline || [];
   const comment = menu.pokoComment || menu.pokoTip || menu.pokoReaction;
@@ -86,6 +103,21 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
         <h2 className="font-display text-xl font-bold text-foreground tracking-tight">{menu.menuTitle}</h2>
       </motion.div>
 
+      {/* Overall Savings Banner */}
+      {menu.totalPantrySavings && menu.totalPantrySavings > 0 && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.15 }}
+          className="flex items-center justify-center gap-2 bg-secondary/10 border border-secondary/20 rounded-xl px-4 py-2.5"
+        >
+          <Wallet className="w-4 h-4 text-secondary" />
+          <span className="text-sm font-semibold text-secondary">
+            You saved ~${menu.totalPantrySavings} overall using your pantry
+          </span>
+        </motion.div>
+      )}
+
       {/* Courses — Horizontal Tiles */}
       <div className="relative">
         <div
@@ -93,43 +125,52 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
           className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          {menu.courses.map((course, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, x: 24 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 + i * 0.08 }}
-              className="snap-start shrink-0 w-[calc(50%-6px)] min-w-[260px] bg-menu-card rounded-2xl border border-menu-border p-6 flex flex-col justify-between"
-            >
-            <div>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-menu-accent">
-                  {courseLabels[course.type] || course.type}
-                </span>
-                <h3 className="font-display font-bold text-foreground text-base leading-snug mt-2">{course.name}</h3>
-                <p className="text-[13px] text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">{course.description}</p>
-                <div className="flex gap-2 mt-4">
-                  {course.keyIngredients.slice(0, 3).map((ing, j) => (
-                    <span
-                      key={j}
-                      className="flex flex-col items-center gap-0.5 bg-menu-tag rounded-lg px-2 py-1.5 min-w-[52px]"
-                    >
-                      <span className="text-lg leading-none">{getIngredientEmoji(ing)}</span>
-                      <span className="text-[9px] text-muted-foreground font-medium truncate max-w-[48px]">
-                        {ing}
+          {menu.courses.map((course, i) => {
+            const ingredients = course.keyIngredients.map(normalizeIngredient);
+            return (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 + i * 0.08 }}
+                className="snap-start shrink-0 w-[calc(50%-6px)] min-w-[260px] bg-menu-card rounded-2xl border border-menu-border p-6 flex flex-col justify-between"
+              >
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-menu-accent">
+                    {courseLabels[course.type] || course.type}
+                  </span>
+                  <h3 className="font-display font-bold text-foreground text-base leading-snug mt-2">{course.name}</h3>
+                  <p className="text-[13px] text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">{course.description}</p>
+                  <div className="flex gap-2 mt-4">
+                    {ingredients.slice(0, 3).map((ing, j) => (
+                      <span
+                        key={j}
+                        className={`flex flex-col items-center gap-0.5 rounded-lg px-2 py-1.5 min-w-[52px] border ${
+                          ing.fromPantry
+                            ? "bg-secondary/10 border-secondary/30"
+                            : "bg-menu-tag border-transparent"
+                        }`}
+                      >
+                        <span className="text-lg leading-none">{getIngredientEmoji(ing.name)}</span>
+                        <span className={`text-[9px] font-medium truncate max-w-[48px] ${
+                          ing.fromPantry ? "text-secondary" : "text-muted-foreground"
+                        }`}>
+                          {ing.name}
+                        </span>
                       </span>
-                    </span>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-              {course.fromFridge && (
-                <span className="mt-2.5 text-[9px] bg-menu-accent-light text-menu-accent-foreground px-2 py-0.5 rounded-full font-semibold self-start">
-                  From your fridge
-                </span>
-              )}
-            </motion.div>
-          ))}
+                {/* Per-dish savings */}
+                {course.pantrySavings != null && course.pantrySavings > 0 && (
+                  <span className="mt-3 text-[11px] text-secondary font-semibold self-start">
+                    Saved ~${course.pantrySavings} using your pantry
+                  </span>
+                )}
+              </motion.div>
+            );
+          })}
         </div>
-        {/* Scroll indicator */}
         {canScroll && (
           <div className="absolute right-0 top-0 bottom-2 w-10 flex items-center justify-center pointer-events-none bg-gradient-to-l from-background/80 to-transparent rounded-r-xl">
             <ChevronRight className="w-4 h-4 text-muted-foreground animate-pulse" />
