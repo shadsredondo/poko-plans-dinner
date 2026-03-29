@@ -105,9 +105,9 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
                 <span className="text-[10px] font-bold uppercase tracking-widest text-menu-accent">
                   {courseLabels[course.type] || course.type}
                 </span>
-                <h3 className="font-display font-bold text-foreground text-[14px] leading-snug mt-1.5">{course.name}</h3>
-                <p className="text-[12px] text-muted-foreground mt-1 leading-relaxed line-clamp-2">{course.description}</p>
-                <div className="flex gap-1.5 mt-2.5">
+                <h3 className="font-display font-bold text-foreground text-base leading-snug mt-2">{course.name}</h3>
+                <p className="text-[13px] text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">{course.description}</p>
+                <div className="flex gap-2 mt-4">
                   {course.keyIngredients.slice(0, 3).map((ing, j) => (
                     <span
                       key={j}
