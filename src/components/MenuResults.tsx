@@ -101,11 +101,13 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
               transition={{ delay: 0.1 + i * 0.08 }}
               className="snap-start shrink-0 w-[200px] bg-menu-card rounded-xl border border-menu-border p-4 flex flex-col justify-between"
             >
-              <div>
+            <div>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-menu-accent">
                   {courseLabels[course.type] || course.type}
                 </span>
-                <div className="flex gap-1.5 mt-2.5 mb-2">
+                <h3 className="font-display font-bold text-foreground text-[14px] leading-snug mt-1.5">{course.name}</h3>
+                <p className="text-[12px] text-muted-foreground mt-1 leading-relaxed line-clamp-2">{course.description}</p>
+                <div className="flex gap-1.5 mt-2.5">
                   {course.keyIngredients.slice(0, 3).map((ing, j) => (
                     <span
                       key={j}
@@ -118,8 +120,6 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
                     </span>
                   ))}
                 </div>
-                <h3 className="font-display font-bold text-foreground text-[14px] leading-snug">{course.name}</h3>
-                <p className="text-[12px] text-muted-foreground mt-1 leading-relaxed line-clamp-2">{course.description}</p>
               </div>
               {course.fromFridge && (
                 <span className="mt-2.5 text-[9px] bg-menu-accent-light text-menu-accent-foreground px-2 py-0.5 rounded-full font-semibold self-start">
