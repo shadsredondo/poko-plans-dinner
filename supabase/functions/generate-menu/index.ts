@@ -45,11 +45,17 @@ You MUST respond with valid JSON in exactly this format:
       "type": "starter" | "main" | "side" | "dessert",
       "name": "Dish name",
       "description": "One short functional description",
-      "keyIngredients": ["ingredient1", "ingredient2"],
-      "fromFridge": true/false
+      "keyIngredients": [
+        { "name": "ingredient1", "fromPantry": true, "estimatedCost": 0 },
+        { "name": "ingredient2", "fromPantry": false, "estimatedCost": 2.5 }
+      ],
+      "estimatedCost": 8,
+      "pantrySavings": 5
     }
   ],
   "shoppingList": ["item1", "item2"],
+  "totalEstimatedCost": 30,
+  "totalPantrySavings": 15,
   "plan": [
     { "time": "2 hours before", "task": "What to do" },
     { "time": "45 mins before", "task": "What to do" },
@@ -57,7 +63,15 @@ You MUST respond with valid JSON in exactly this format:
     { "time": "Serve", "task": "Plate up and enjoy!" }
   ],
   "pokoComment": "One short, optional line"
-}`;
+}
+
+For cost estimates:
+- estimatedCost per ingredient: realistic USD estimate for a typical grocery store
+- fromPantry: true if the ingredient matches what the user listed as available
+- pantrySavings per dish: sum of estimatedCost for fromPantry ingredients
+- totalEstimatedCost: sum of all ingredient costs across all dishes
+- totalPantrySavings: sum of all pantrySavings across all dishes
+- Keep estimates simple, rounded, and believable`;
 
     const userPrompt = `Here's what we're working with:
 - Guests: ${guests} people
