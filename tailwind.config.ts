@@ -56,6 +56,14 @@ export default {
           light: "hsl(var(--poko-light))",
           bubble: "hsl(var(--poko-bubble))",
         },
+        menu: {
+          accent: "hsl(var(--menu-accent))",
+          "accent-light": "hsl(var(--menu-accent-light))",
+          "accent-foreground": "hsl(var(--menu-accent-foreground))",
+          card: "hsl(var(--menu-card))",
+          border: "hsl(var(--menu-border))",
+          tag: "hsl(var(--menu-tag))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

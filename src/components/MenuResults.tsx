@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ShoppingCart, ClipboardList, Sparkles } from "lucide-react";
+import { ShoppingCart, ClipboardList, Leaf } from "lucide-react";
 
 interface Course {
   type: string;
@@ -25,13 +25,6 @@ interface MenuData {
   pokoTip?: string;
 }
 
-const courseEmojis: Record<string, string> = {
-  starter: "🥗",
-  main: "🍽️",
-  side: "🥘",
-  dessert: "🍰",
-};
-
 const courseLabels: Record<string, string> = {
   starter: "Starter",
   main: "Main",
@@ -44,14 +37,19 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
   const comment = menu.pokoComment || menu.pokoTip || menu.pokoReaction;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Menu Title */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center py-2"
+        className="text-center py-3"
       >
-        <h2 className="font-display text-xl font-bold text-foreground">{menu.menuTitle}</h2>
+        <div className="inline-flex items-center gap-2 mb-1">
+          <div className="w-8 h-px bg-menu-accent/40" />
+          <Leaf className="w-4 h-4 text-menu-accent" />
+          <div className="w-8 h-px bg-menu-accent/40" />
+        </div>
+        <h2 className="font-display text-xl font-bold text-foreground tracking-tight">{menu.menuTitle}</h2>
       </motion.div>
 
       {/* Courses */}
@@ -62,24 +60,23 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 + i * 0.1 }}
-            className="bg-card rounded-2xl border border-border p-4"
+            className="bg-menu-card rounded-xl border border-menu-border p-4"
           >
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-lg">{courseEmojis[course.type] || "🍴"}</span>
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[11px] font-bold uppercase tracking-widest text-menu-accent">
                 {courseLabels[course.type] || course.type}
               </span>
               {course.fromFridge && (
-                <span className="text-[10px] bg-secondary/15 text-secondary px-2 py-0.5 rounded-full font-semibold ml-auto">
+                <span className="text-[10px] bg-menu-accent-light text-menu-accent-foreground px-2 py-0.5 rounded-full font-semibold">
                   From your fridge
                 </span>
               )}
             </div>
-            <h3 className="font-display font-bold text-foreground text-base">{course.name}</h3>
-            <p className="text-sm text-muted-foreground mt-0.5 leading-snug">{course.description}</p>
-            <div className="flex flex-wrap gap-1.5 mt-2">
+            <h3 className="font-display font-bold text-foreground text-[15px] leading-snug">{course.name}</h3>
+            <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{course.description}</p>
+            <div className="flex flex-wrap gap-1.5 mt-2.5">
               {course.keyIngredients.map((ing, j) => (
-                <span key={j} className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                <span key={j} className="text-[11px] bg-menu-tag text-muted-foreground px-2 py-0.5 rounded-md">
                   {ing}
                 </span>
               ))}
@@ -94,15 +91,15 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="bg-card rounded-2xl border border-border p-4"
+          className="bg-menu-card rounded-xl border border-menu-border p-4"
         >
           <div className="flex items-center gap-2 mb-3">
-            <ShoppingCart className="w-4 h-4 text-primary" />
+            <ShoppingCart className="w-4 h-4 text-menu-accent" />
             <h3 className="font-display font-bold text-foreground text-sm">Shopping List</h3>
           </div>
           <div className="flex flex-wrap gap-2">
             {menu.shoppingList.map((item, i) => (
-              <span key={i} className="text-sm bg-muted text-foreground px-3 py-1 rounded-full">
+              <span key={i} className="text-sm bg-menu-tag text-foreground px-3 py-1 rounded-md font-medium">
                 {item}
               </span>
             ))}
@@ -116,19 +113,19 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
-          className="bg-card rounded-2xl border border-border p-4"
+          className="bg-menu-card rounded-xl border border-menu-border p-4"
         >
           <div className="flex items-center gap-2 mb-3">
-            <ClipboardList className="w-4 h-4 text-primary" />
+            <ClipboardList className="w-4 h-4 text-menu-accent" />
             <h3 className="font-display font-bold text-foreground text-sm">Plan</h3>
           </div>
           <div className="space-y-2.5">
             {planItems.map((item, i) => (
               <div key={i} className="flex gap-3 items-baseline">
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-lg min-w-[100px] text-center whitespace-nowrap">
+                <span className="text-[11px] font-bold text-menu-accent-foreground bg-menu-accent-light px-2.5 py-1 rounded-md min-w-[105px] text-center whitespace-nowrap">
                   {item.time}
                 </span>
-                <span className="text-sm text-foreground">{item.task}</span>
+                <span className="text-sm text-foreground leading-snug">{item.task}</span>
               </div>
             ))}
           </div>
@@ -141,10 +138,9 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
-          className="flex items-start gap-2 px-1"
+          className="text-center px-4 pt-1"
         >
-          <Sparkles className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
-          <p className="text-sm text-muted-foreground italic">{comment}</p>
+          <p className="text-sm text-muted-foreground">{comment}</p>
         </motion.div>
       )}
     </div>
