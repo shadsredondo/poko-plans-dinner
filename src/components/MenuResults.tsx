@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
-import { Clock, ShoppingCart, ChefHat, Sparkles } from "lucide-react";
-import ChatBubble from "./ChatBubble";
+import { ShoppingCart, ClipboardList, Sparkles } from "lucide-react";
 
 interface Course {
   type: string;
@@ -10,18 +9,20 @@ interface Course {
   fromFridge: boolean;
 }
 
-interface TimelineItem {
+interface PlanItem {
   time: string;
   task: string;
 }
 
 interface MenuData {
-  pokoReaction: string;
   menuTitle: string;
   courses: Course[];
   shoppingList: string[];
-  timeline: TimelineItem[];
-  pokoTip: string;
+  plan?: PlanItem[];
+  timeline?: PlanItem[];
+  pokoComment?: string;
+  pokoReaction?: string;
+  pokoTip?: string;
 }
 
 const courseEmojis: Record<string, string> = {
@@ -33,84 +34,75 @@ const courseEmojis: Record<string, string> = {
 
 const courseLabels: Record<string, string> = {
   starter: "Starter",
-  main: "Main Course",
+  main: "Main",
   side: "Side",
   dessert: "Dessert",
 };
 
 const MenuResults = ({ menu }: { menu: MenuData }) => {
+  const planItems = menu.plan || menu.timeline || [];
+  const comment = menu.pokoComment || menu.pokoTip || menu.pokoReaction;
+
   return (
     <div className="space-y-4">
-      <ChatBubble message={menu.pokoReaction} sender="poko" />
-
+      {/* Menu Title */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="bg-card rounded-2xl border border-border overflow-hidden shadow-sm"
+        className="text-center py-2"
       >
-        {/* Menu Title */}
-        <div className="bg-primary px-5 py-4">
-          <div className="flex items-center gap-2">
-            <ChefHat className="w-5 h-5 text-primary-foreground" />
-            <h2 className="font-display text-lg font-bold text-primary-foreground">{menu.menuTitle}</h2>
-          </div>
-        </div>
-
-        {/* Courses */}
-        <div className="p-4 space-y-3">
-          {menu.courses.map((course, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5 + i * 0.15 }}
-              className="bg-background rounded-xl p-4 border border-border"
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">{courseEmojis[course.type] || "🍴"}</span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      {courseLabels[course.type] || course.type}
-                    </span>
-                    {course.fromFridge && (
-                      <span className="text-[10px] bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full font-semibold">
-                        ✓ From your fridge
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="font-display font-bold text-foreground mt-1">{course.name}</h3>
-                  <p className="text-sm text-muted-foreground mt-0.5">{course.description}</p>
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {course.keyIngredients.map((ing, j) => (
-                      <span key={j} className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-                        {ing}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+        <h2 className="font-display text-xl font-bold text-foreground">{menu.menuTitle}</h2>
       </motion.div>
+
+      {/* Courses */}
+      <div className="space-y-3">
+        {menu.courses.map((course, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 + i * 0.1 }}
+            className="bg-card rounded-2xl border border-border p-4"
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-lg">{courseEmojis[course.type] || "🍴"}</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                {courseLabels[course.type] || course.type}
+              </span>
+              {course.fromFridge && (
+                <span className="text-[10px] bg-secondary/15 text-secondary px-2 py-0.5 rounded-full font-semibold ml-auto">
+                  From your fridge
+                </span>
+              )}
+            </div>
+            <h3 className="font-display font-bold text-foreground text-base">{course.name}</h3>
+            <p className="text-sm text-muted-foreground mt-0.5 leading-snug">{course.description}</p>
+            <div className="flex flex-wrap gap-1.5 mt-2">
+              {course.keyIngredients.map((ing, j) => (
+                <span key={j} className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                  {ing}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        ))}
+      </div>
 
       {/* Shopping List */}
       {menu.shoppingList.length > 0 && (
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1 }}
-          className="bg-card rounded-2xl border border-border p-4 shadow-sm"
+          transition={{ delay: 0.6 }}
+          className="bg-card rounded-2xl border border-border p-4"
         >
           <div className="flex items-center gap-2 mb-3">
             <ShoppingCart className="w-4 h-4 text-primary" />
-            <h3 className="font-display font-bold text-foreground">Quick Shopping List</h3>
+            <h3 className="font-display font-bold text-foreground text-sm">Shopping List</h3>
           </div>
           <div className="flex flex-wrap gap-2">
             {menu.shoppingList.map((item, i) => (
-              <span key={i} className="text-sm bg-poko-light text-foreground px-3 py-1.5 rounded-full border border-border">
+              <span key={i} className="text-sm bg-muted text-foreground px-3 py-1 rounded-full">
                 {item}
               </span>
             ))}
@@ -118,42 +110,43 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
         </motion.div>
       )}
 
-      {/* Timeline */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.2 }}
-        className="bg-card rounded-2xl border border-border p-4 shadow-sm"
-      >
-        <div className="flex items-center gap-2 mb-3">
-          <Clock className="w-4 h-4 text-primary" />
-          <h3 className="font-display font-bold text-foreground">Cooking Timeline</h3>
-        </div>
-        <div className="space-y-3">
-          {menu.timeline.map((item, i) => (
-            <div key={i} className="flex gap-3 items-start">
-              <span className="text-xs font-mono font-bold text-primary bg-poko-light px-2 py-1 rounded-lg min-w-[60px] text-center">
-                {item.time}
-              </span>
-              <span className="text-sm text-foreground pt-0.5">{item.task}</span>
-            </div>
-          ))}
-        </div>
-      </motion.div>
+      {/* Plan */}
+      {planItems.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="bg-card rounded-2xl border border-border p-4"
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <ClipboardList className="w-4 h-4 text-primary" />
+            <h3 className="font-display font-bold text-foreground text-sm">Plan</h3>
+          </div>
+          <div className="space-y-2.5">
+            {planItems.map((item, i) => (
+              <div key={i} className="flex gap-3 items-baseline">
+                <span className="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-lg min-w-[100px] text-center whitespace-nowrap">
+                  {item.time}
+                </span>
+                <span className="text-sm text-foreground">{item.task}</span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      )}
 
-      {/* Poko Tip */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.4 }}
-        className="bg-poko-light rounded-2xl p-4 border border-border"
-      >
-        <div className="flex items-center gap-2 mb-1">
-          <Sparkles className="w-4 h-4 text-primary" />
-          <span className="font-display font-bold text-sm text-foreground">Poko's Pro Tip</span>
-        </div>
-        <p className="text-sm text-muted-foreground">{menu.pokoTip}</p>
-      </motion.div>
+      {/* Poko Comment */}
+      {comment && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="flex items-start gap-2 px-1"
+        >
+          <Sparkles className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
+          <p className="text-sm text-muted-foreground italic">{comment}</p>
+        </motion.div>
+      )}
     </div>
   );
 };
