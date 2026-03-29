@@ -99,15 +99,15 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
               initial={{ opacity: 0, x: 24 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 + i * 0.08 }}
-              className="snap-start shrink-0 w-[200px] bg-menu-card rounded-xl border border-menu-border p-4 flex flex-col justify-between"
+              className="snap-start shrink-0 w-[calc(50%-6px)] min-w-[260px] bg-menu-card rounded-2xl border border-menu-border p-6 flex flex-col justify-between"
             >
             <div>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-menu-accent">
                   {courseLabels[course.type] || course.type}
                 </span>
-                <h3 className="font-display font-bold text-foreground text-[14px] leading-snug mt-1.5">{course.name}</h3>
-                <p className="text-[12px] text-muted-foreground mt-1 leading-relaxed line-clamp-2">{course.description}</p>
-                <div className="flex gap-1.5 mt-2.5">
+                <h3 className="font-display font-bold text-foreground text-base leading-snug mt-2">{course.name}</h3>
+                <p className="text-[13px] text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">{course.description}</p>
+                <div className="flex gap-2 mt-4">
                   {course.keyIngredients.slice(0, 3).map((ing, j) => (
                     <span
                       key={j}
