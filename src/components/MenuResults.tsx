@@ -99,7 +99,7 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
               initial={{ opacity: 0, x: 24 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 + i * 0.08 }}
-              className="snap-start shrink-0 w-[200px] bg-menu-card rounded-xl border border-menu-border p-4 flex flex-col justify-between"
+              className="snap-start shrink-0 w-[calc(50%-6px)] min-w-[260px] bg-menu-card rounded-2xl border border-menu-border p-6 flex flex-col justify-between"
             >
             <div>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-menu-accent">
