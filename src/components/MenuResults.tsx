@@ -1,5 +1,6 @@
+import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ShoppingCart, ClipboardList, Leaf } from "lucide-react";
+import { ShoppingCart, ClipboardList, Leaf, ChevronRight } from "lucide-react";
 
 interface Course {
   type: string;
@@ -32,9 +33,42 @@ const courseLabels: Record<string, string> = {
   dessert: "Dessert",
 };
 
+const ingredientEmojis: Record<string, string> = {
+  chicken: "🍗", beef: "🥩", pork: "🥩", lamb: "🐑", fish: "🐟", salmon: "🍣",
+  shrimp: "🦐", prawn: "🦐", rice: "🍚", pasta: "🍝", noodles: "🍜",
+  bread: "🍞", egg: "🥚", eggs: "🥚", cheese: "🧀", butter: "🧈", milk: "🥛",
+  cream: "🍶", tomato: "🍅", tomatoes: "🍅", potato: "🥔", potatoes: "🥔",
+  onion: "🧅", garlic: "🧄", carrot: "🥕", broccoli: "🥦", corn: "🌽",
+  mushroom: "🍄", mushrooms: "🍄", pepper: "🫑", avocado: "🥑",
+  lemon: "🍋", lime: "🍋", orange: "🍊", apple: "🍎", banana: "🍌",
+  strawberry: "🍓", coconut: "🥥", chocolate: "🍫", honey: "🍯",
+  sugar: "🍬", salt: "🧂", olive: "🫒", oil: "🫒", tofu: "🧊",
+  lettuce: "🥬", spinach: "🥬", cucumber: "🥒", eggplant: "🍆",
+  peas: "🫛", beans: "🫘", chili: "🌶️", ginger: "🫚", herb: "🌿",
+  herbs: "🌿", basil: "🌿", cilantro: "🌿", mint: "🌿", wine: "🍷",
+  soy: "🥫", sauce: "🥫", vinegar: "🥫",
+};
+
+function getIngredientEmoji(ingredient: string): string {
+  const lower = ingredient.toLowerCase();
+  for (const [key, emoji] of Object.entries(ingredientEmojis)) {
+    if (lower.includes(key)) return emoji;
+  }
+  return "🥄";
+}
+
 const MenuResults = ({ menu }: { menu: MenuData }) => {
   const planItems = menu.plan || menu.timeline || [];
   const comment = menu.pokoComment || menu.pokoTip || menu.pokoReaction;
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScroll, setCanScroll] = useState(false);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) {
+      setCanScroll(el.scrollWidth > el.clientWidth);
+    }
+  }, [menu.courses]);
 
   return (
     <div className="space-y-5">
@@ -52,37 +86,55 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
         <h2 className="font-display text-xl font-bold text-foreground tracking-tight">{menu.menuTitle}</h2>
       </motion.div>
 
-      {/* Courses */}
-      <div className="space-y-3">
-        {menu.courses.map((course, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 + i * 0.1 }}
-            className="bg-menu-card rounded-xl border border-menu-border p-4"
-          >
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-menu-accent">
-                {courseLabels[course.type] || course.type}
-              </span>
+      {/* Courses — Horizontal Tiles */}
+      <div className="relative">
+        <div
+          ref={scrollRef}
+          className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          {menu.courses.map((course, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: 24 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 + i * 0.08 }}
+              className="snap-start shrink-0 w-[200px] bg-menu-card rounded-xl border border-menu-border p-4 flex flex-col justify-between"
+            >
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-menu-accent">
+                  {courseLabels[course.type] || course.type}
+                </span>
+                <div className="flex gap-1.5 mt-2.5 mb-2">
+                  {course.keyIngredients.slice(0, 3).map((ing, j) => (
+                    <span
+                      key={j}
+                      className="flex flex-col items-center gap-0.5 bg-menu-tag rounded-lg px-2 py-1.5 min-w-[52px]"
+                    >
+                      <span className="text-lg leading-none">{getIngredientEmoji(ing)}</span>
+                      <span className="text-[9px] text-muted-foreground font-medium truncate max-w-[48px]">
+                        {ing}
+                      </span>
+                    </span>
+                  ))}
+                </div>
+                <h3 className="font-display font-bold text-foreground text-[14px] leading-snug">{course.name}</h3>
+                <p className="text-[12px] text-muted-foreground mt-1 leading-relaxed line-clamp-2">{course.description}</p>
+              </div>
               {course.fromFridge && (
-                <span className="text-[10px] bg-menu-accent-light text-menu-accent-foreground px-2 py-0.5 rounded-full font-semibold">
+                <span className="mt-2.5 text-[9px] bg-menu-accent-light text-menu-accent-foreground px-2 py-0.5 rounded-full font-semibold self-start">
                   From your fridge
                 </span>
               )}
-            </div>
-            <h3 className="font-display font-bold text-foreground text-[15px] leading-snug">{course.name}</h3>
-            <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{course.description}</p>
-            <div className="flex flex-wrap gap-1.5 mt-2.5">
-              {course.keyIngredients.map((ing, j) => (
-                <span key={j} className="text-[11px] bg-menu-tag text-muted-foreground px-2 py-0.5 rounded-md">
-                  {ing}
-                </span>
-              ))}
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          ))}
+        </div>
+        {/* Scroll indicator */}
+        {canScroll && (
+          <div className="absolute right-0 top-0 bottom-2 w-10 flex items-center justify-center pointer-events-none bg-gradient-to-l from-background/80 to-transparent rounded-r-xl">
+            <ChevronRight className="w-4 h-4 text-muted-foreground animate-pulse" />
+          </div>
+        )}
       </div>
 
       {/* Shopping List */}
