@@ -277,11 +277,12 @@ const Index = () => {
           {step === "results" && menu && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <MenuResults menu={menu} />
+              <SaveMenuNudge />
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.6 }}
-                className="flex justify-center pt-4 pb-6"
+                transition={{ delay: 1.8 }}
+                className="flex justify-center pt-2 pb-6"
               >
                 <button
                   onClick={handleReset}
