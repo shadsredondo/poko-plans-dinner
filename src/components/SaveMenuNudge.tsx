@@ -4,6 +4,7 @@ import { Bookmark } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 import { useToast } from "@/hooks/use-toast";
 
 const SaveMenuNudge = () => {
@@ -16,12 +17,11 @@ const SaveMenuNudge = () => {
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: window.location.origin },
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
     });
-    if (error) {
-      toast({ title: "Something went wrong", description: error.message, variant: "destructive" });
+    if (result?.error) {
+      toast({ title: "Something went wrong", description: String(result.error), variant: "destructive" });
     }
     setLoading(false);
   };
