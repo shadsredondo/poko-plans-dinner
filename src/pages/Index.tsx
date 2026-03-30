@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import PokoAvatar from "@/components/PokoAvatar";
 import ChatBubble from "@/components/ChatBubble";
 import MenuResults from "@/components/MenuResults";
+import SaveMenuNudge from "@/components/SaveMenuNudge";
 import { useToast } from "@/hooks/use-toast";
 
 type Step = "welcome" | "guests" | "ingredients" | "effort" | "skill" | "cuisine" | "generating" | "results";
