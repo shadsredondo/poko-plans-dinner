@@ -32,7 +32,7 @@ const SavedMenus = () => {
 
   const handleReuse = (menu: SavedMenu) => {
     // Navigate to home with menu params to pre-fill
-    navigate("/", {
+    navigate("/new", {
       state: {
         reuse: true,
         guests: menu.guests,
