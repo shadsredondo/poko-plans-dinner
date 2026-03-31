@@ -60,20 +60,11 @@ const SavedMenus = () => {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-3 border-b border-border bg-card">
-        <div className="flex items-center gap-2">
+        <button onClick={() => navigate("/")} className="flex items-center gap-2">
           <PokoAvatar size="sm" animate={false} />
           <span className="font-display font-bold text-foreground">Poko</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigate("/new")}
-            className="text-muted-foreground hover:text-foreground transition-colors"
-            title="New menu"
-          >
-            <ChefHat className="w-4 h-4" />
-          </button>
-          <AccountMenu />
-        </div>
+        </button>
+        <AccountMenu />
       </header>
 
       {/* Expanded menu view */}
@@ -121,6 +112,19 @@ const SavedMenus = () => {
             Pick up where you left off or reuse a favorite.
           </p>
         </motion.div>
+
+        <motion.button
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
+          onClick={() => navigate("/new")}
+          className="w-full bg-primary text-primary-foreground py-3.5 rounded-2xl font-bold text-sm shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center gap-2 mb-6"
+        >
+          <ChefHat className="w-4 h-4" />
+          Design new menu
+        </motion.button>
 
         {isLoading ? (
           <div className="flex justify-center py-16">
