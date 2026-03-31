@@ -152,7 +152,7 @@ const SavedMenus = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/new")}
               className="bg-primary text-primary-foreground px-6 py-3 rounded-full font-bold text-sm shadow-lg hover:shadow-xl transition-shadow"
             >
               Create a menu 🚀
