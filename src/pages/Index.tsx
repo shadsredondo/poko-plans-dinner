@@ -138,6 +138,7 @@ const Index = () => {
           </button>
         )}
       </header>
+      <ReturningUserBanner />
 
       {/* Chat Area */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-6 space-y-4 max-w-lg mx-auto w-full">
