@@ -6,6 +6,7 @@ import PokoAvatar from "@/components/PokoAvatar";
 import ChatBubble from "@/components/ChatBubble";
 import MenuResults from "@/components/MenuResults";
 import SaveMenuNudge from "@/components/SaveMenuNudge";
+import ReturningUserBanner from "@/components/ReturningUserBanner";
 import { useToast } from "@/hooks/use-toast";
 
 type Step = "welcome" | "guests" | "ingredients" | "effort" | "skill" | "cuisine" | "generating" | "results";
@@ -137,6 +138,7 @@ const Index = () => {
           </button>
         )}
       </header>
+      <ReturningUserBanner />
 
       {/* Chat Area */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-6 space-y-4 max-w-lg mx-auto w-full">
