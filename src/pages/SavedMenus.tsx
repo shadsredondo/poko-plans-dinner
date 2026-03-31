@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChefHat, Wallet, Clock, RotateCcw, LogOut, Trash2, X } from "lucide-react";
+import { ChefHat, Wallet, Clock, RotateCcw, Trash2, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useSavedMenus, type SavedMenu } from "@/hooks/useSavedMenus";
 import PokoAvatar from "@/components/PokoAvatar";
+import AccountMenu from "@/components/AccountMenu";
 import MenuResults from "@/components/MenuResults";
 import { useToast } from "@/hooks/use-toast";
 
@@ -22,7 +23,7 @@ function timeAgo(dateStr: string): string {
 }
 
 const SavedMenus = () => {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const { data: menus, isLoading, deleteMenu } = useSavedMenus(user?.id);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -71,13 +72,7 @@ const SavedMenus = () => {
           >
             <ChefHat className="w-4 h-4" />
           </button>
-          <button
-            onClick={signOut}
-            className="text-muted-foreground hover:text-foreground transition-colors"
-            title="Sign out"
-          >
-            <LogOut className="w-4 h-4" />
-          </button>
+          <AccountMenu />
         </div>
       </header>
 

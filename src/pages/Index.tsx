@@ -6,6 +6,7 @@ import PokoAvatar from "@/components/PokoAvatar";
 import ChatBubble from "@/components/ChatBubble";
 import MenuResults from "@/components/MenuResults";
 import SaveMenuNudge from "@/components/SaveMenuNudge";
+import AccountMenu from "@/components/AccountMenu";
 import ReturningUserBanner from "@/components/ReturningUserBanner";
 import { useToast } from "@/hooks/use-toast";
 
@@ -133,10 +134,14 @@ const Index = () => {
           <span className="font-display font-bold text-foreground">Poko</span>
         </div>
         {step !== "welcome" && (
-          <button onClick={handleReset} className="text-muted-foreground hover:text-foreground transition-colors">
-            <RotateCcw className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-3">
+            <button onClick={handleReset} className="text-muted-foreground hover:text-foreground transition-colors">
+              <RotateCcw className="w-4 h-4" />
+            </button>
+            <AccountMenu />
+          </div>
         )}
+        {step === "welcome" && <AccountMenu />}
       </header>
       <ReturningUserBanner />
 
