@@ -37,9 +37,10 @@ const cuisineOptions = [
 ];
 
 const Index = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [step, setStep] = useState<Step>("welcome");
   const [guests, setGuests] = useState("");
-  const [ingredients, setIngredients] = useState("");
   const [effort, setEffort] = useState("");
   const [skill, setSkill] = useState("");
   const [cuisine, setCuisine] = useState("");
