@@ -73,7 +73,9 @@ const Index = () => {
   const handleSubmitIngredients = () => {
     const val = inputValue.trim();
     if (!val) return;
-    setIngredients(val);
+    if (voice.isListening) voice.stop();
+    const cleaned = cleanIngredients(val);
+    setIngredients(cleaned || val);
     setInputValue("");
     setStep("effort");
   };
