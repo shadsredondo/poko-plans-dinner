@@ -60,20 +60,11 @@ const SavedMenus = () => {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-3 border-b border-border bg-card">
-        <div className="flex items-center gap-2">
+        <button onClick={() => navigate("/")} className="flex items-center gap-2">
           <PokoAvatar size="sm" animate={false} />
           <span className="font-display font-bold text-foreground">Poko</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigate("/new")}
-            className="text-muted-foreground hover:text-foreground transition-colors"
-            title="New menu"
-          >
-            <ChefHat className="w-4 h-4" />
-          </button>
-          <AccountMenu />
-        </div>
+        </button>
+        <AccountMenu />
       </header>
 
       {/* Expanded menu view */}
