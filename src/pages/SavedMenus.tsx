@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useSavedMenus, type SavedMenu } from "@/hooks/useSavedMenus";
 import PokoAvatar from "@/components/PokoAvatar";
+import AccountMenu from "@/components/AccountMenu";
 import MenuResults from "@/components/MenuResults";
 import { useToast } from "@/hooks/use-toast";
 
