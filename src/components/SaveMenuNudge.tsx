@@ -1,28 +1,74 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Bookmark } from "lucide-react";
+import { Bookmark, Check } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useSavedMenus } from "@/hooks/useSavedMenus";
 import { useToast } from "@/hooks/use-toast";
 
-const SaveMenuNudge = () => {
+interface SaveMenuNudgeProps {
+  menu?: any;
+  guests?: number;
+  ingredients?: string;
+  effort?: string;
+  skill?: string;
+  cuisine?: string;
+}
+
+const SaveMenuNudge = ({ menu, guests, ingredients, effort, skill, cuisine }: SaveMenuNudgeProps) => {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const { user } = useAuth();
+  const { saveMenu } = useSavedMenus(user?.id);
   const { toast } = useToast();
+
+  // If user is already signed in, save directly
+  const handleSave = async () => {
+    if (!menu) return;
+    if (!user) {
+      setOpen(true);
+      return;
+    }
+    try {
+      await saveMenu.mutateAsync({
+        menu_title: menu.menuTitle || "Untitled Menu",
+        menu_data: menu,
+        guests,
+        ingredients,
+        effort,
+        skill,
+        cuisine,
+        total_estimated_cost: menu.totalEstimatedCost,
+        total_pantry_savings: menu.totalPantrySavings,
+      });
+      setSaved(true);
+      toast({ title: "Menu saved! 🎉" });
+    } catch (err: any) {
+      toast({ title: "Failed to save", description: err.message, variant: "destructive" });
+    }
+  };
+
+  // Auto-save after auth completes
+  useEffect(() => {
+    if (user && open && menu && !saved) {
+      setOpen(false);
+      handleSave();
+    }
+  }, [user]);
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
-
     try {
       const { lovable } = await import("@/integrations/lovable");
       const result = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: window.location.origin,
       });
-
       if (result?.error) {
         toast({ title: "Something went wrong", description: String(result.error), variant: "destructive" });
       }
@@ -57,6 +103,21 @@ const SaveMenuNudge = () => {
     setLoading(false);
   };
 
+  if (saved) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center space-y-2 pt-2 pb-2"
+      >
+        <div className="flex items-center justify-center gap-2 text-secondary">
+          <Check className="w-4 h-4" />
+          <span className="text-sm font-semibold">Menu saved!</span>
+        </div>
+      </motion.div>
+    );
+  }
+
   return (
     <>
       <motion.div
@@ -69,7 +130,7 @@ const SaveMenuNudge = () => {
           Save this menu so you don't lose it.
         </p>
         <Button
-          onClick={() => setOpen(true)}
+          onClick={handleSave}
           className="rounded-full px-6 gap-2 font-bold shadow-md"
         >
           <Bookmark className="w-4 h-4" />
