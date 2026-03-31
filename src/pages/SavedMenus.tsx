@@ -72,13 +72,7 @@ const SavedMenus = () => {
           >
             <ChefHat className="w-4 h-4" />
           </button>
-          <button
-            onClick={signOut}
-            className="text-muted-foreground hover:text-foreground transition-colors"
-            title="Sign out"
-          >
-            <LogOut className="w-4 h-4" />
-          </button>
+          <AccountMenu />
         </div>
       </header>
 
