@@ -6,6 +6,7 @@ import PokoAvatar from "@/components/PokoAvatar";
 import ChatBubble from "@/components/ChatBubble";
 import MenuResults from "@/components/MenuResults";
 import SaveMenuNudge from "@/components/SaveMenuNudge";
+import AccountMenu from "@/components/AccountMenu";
 import ReturningUserBanner from "@/components/ReturningUserBanner";
 import { useToast } from "@/hooks/use-toast";
 
