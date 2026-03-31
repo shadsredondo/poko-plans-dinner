@@ -62,16 +62,10 @@ You MUST respond with valid JSON in exactly this format:
     { "time": "15 mins before", "task": "What to do" },
     { "time": "Serve", "task": "Plate up and enjoy!" }
   ],
-  "pokoComment": "One short, optional line"
-}
-
-For cost estimates:
-- estimatedCost per ingredient: realistic USD estimate for a typical grocery store
-- fromPantry: true if the ingredient matches what the user listed as available
-- pantrySavings per dish: sum of estimatedCost for fromPantry ingredients
-- totalEstimatedCost: sum of all ingredient costs across all dishes
-- totalPantrySavings: sum of all pantrySavings across all dishes
-- Keep estimates simple, rounded, and believable`;
+   "pokoComment": "One short, optional line"
+ }
+ 
+ IMPORTANT: You MUST always include estimatedCost and pantrySavings for every course, and totalEstimatedCost and totalPantrySavings at the top level. Never omit these fields. If no savings apply, use 0.`;
 
     const userPrompt = `Here's what we're working with:
 - Guests: ${guests} people
