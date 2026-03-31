@@ -60,9 +60,9 @@ const SavedMenus = () => {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-3 border-b border-border bg-card">
-        <button onClick={() => navigate("/")} className="flex items-center gap-2">
-          <PokoAvatar size="sm" animate={false} />
-          <span className="font-display font-bold text-foreground">Poko</span>
+        <button onClick={() => navigate("/new")} className="flex items-center gap-2.5">
+          <PokoAvatar size="md" animate={false} />
+          <span className="font-display font-bold text-foreground text-lg">Poko</span>
         </button>
         <AccountMenu />
       </header>
