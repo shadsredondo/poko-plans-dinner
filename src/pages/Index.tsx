@@ -47,6 +47,11 @@ const Index = () => {
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
   const { toast } = useToast();
 
+  const handleVoiceResult = useCallback((text: string) => {
+    setInputValue(text);
+  }, []);
+  const voice = useVoiceDictation(handleVoiceResult);
+
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [step, menu]);
