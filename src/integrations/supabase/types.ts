@@ -14,7 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      saved_menus: {
+        Row: {
+          created_at: string
+          cuisine: string | null
+          effort: string | null
+          guests: number | null
+          id: string
+          ingredients: string | null
+          menu_data: Json
+          menu_title: string
+          skill: string | null
+          total_estimated_cost: number | null
+          total_pantry_savings: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          cuisine?: string | null
+          effort?: string | null
+          guests?: number | null
+          id?: string
+          ingredients?: string | null
+          menu_data: Json
+          menu_title: string
+          skill?: string | null
+          total_estimated_cost?: number | null
+          total_pantry_savings?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          cuisine?: string | null
+          effort?: string | null
+          guests?: number | null
+          id?: string
+          ingredients?: string | null
+          menu_data?: Json
+          menu_title?: string
+          skill?: string | null
+          total_estimated_cost?: number | null
+          total_pantry_savings?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
