@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Send, Loader2, RotateCcw, Mic, MicOff } from "lucide-react";
+import { Send, Loader2, RotateCcw, Mic, MicOff, BookOpen } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import PokoAvatar from "@/components/PokoAvatar";
 import ChatBubble from "@/components/ChatBubble";
@@ -8,6 +9,7 @@ import MenuResults from "@/components/MenuResults";
 import SaveMenuNudge from "@/components/SaveMenuNudge";
 import AccountMenu from "@/components/AccountMenu";
 import ReturningUserBanner from "@/components/ReturningUserBanner";
+import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useVoiceDictation } from "@/hooks/useVoiceDictation";
 import { cleanIngredients } from "@/lib/cleanIngredients";
