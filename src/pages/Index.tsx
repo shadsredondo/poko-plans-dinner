@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Send, Loader2, RotateCcw, Mic, MicOff } from "lucide-react";
+import { Send, Loader2, RotateCcw, Mic, MicOff, BookOpen } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import PokoAvatar from "@/components/PokoAvatar";
 import ChatBubble from "@/components/ChatBubble";
@@ -8,6 +9,7 @@ import MenuResults from "@/components/MenuResults";
 import SaveMenuNudge from "@/components/SaveMenuNudge";
 import AccountMenu from "@/components/AccountMenu";
 import ReturningUserBanner from "@/components/ReturningUserBanner";
+import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useVoiceDictation } from "@/hooks/useVoiceDictation";
 import { cleanIngredients } from "@/lib/cleanIngredients";
@@ -35,9 +37,11 @@ const cuisineOptions = [
 ];
 
 const Index = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [step, setStep] = useState<Step>("welcome");
-  const [guests, setGuests] = useState("");
   const [ingredients, setIngredients] = useState("");
+  const [guests, setGuests] = useState("");
   const [effort, setEffort] = useState("");
   const [skill, setSkill] = useState("");
   const [cuisine, setCuisine] = useState("");
@@ -142,15 +146,19 @@ const Index = () => {
           <PokoAvatar size="sm" animate={false} />
           <span className="font-display font-bold text-foreground">Poko</span>
         </div>
-        {step !== "welcome" && (
-          <div className="flex items-center gap-3">
-            <button onClick={handleReset} className="text-muted-foreground hover:text-foreground transition-colors">
+        <div className="flex items-center gap-3">
+          {step !== "welcome" && (
+            <button onClick={handleReset} className="text-muted-foreground hover:text-foreground transition-colors" title="Start over">
               <RotateCcw className="w-4 h-4" />
             </button>
-            <AccountMenu />
-          </div>
-        )}
-        {step === "welcome" && <AccountMenu />}
+          )}
+          {user && (
+            <button onClick={() => navigate("/")} className="text-muted-foreground hover:text-foreground transition-colors" title="My Menus">
+              <BookOpen className="w-4 h-4" />
+            </button>
+          )}
+          <AccountMenu />
+        </div>
       </header>
       <ReturningUserBanner />
 
