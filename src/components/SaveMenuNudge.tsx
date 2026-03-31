@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Bookmark, Check } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useSavedMenus } from "@/hooks/useSavedMenus";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface SaveMenuNudgeProps {
   menu?: any;
@@ -17,6 +18,8 @@ interface SaveMenuNudgeProps {
   cuisine?: string;
 }
 
+const PENDING_MENU_KEY = "poko_pending_menu";
+
 const SaveMenuNudge = ({ menu, guests, ingredients, effort, skill, cuisine }: SaveMenuNudgeProps) => {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
@@ -24,47 +27,89 @@ const SaveMenuNudge = ({ menu, guests, ingredients, effort, skill, cuisine }: Sa
   const [isSignUp, setIsSignUp] = useState(true);
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
+  const savingRef = useRef(false);
   const { user } = useAuth();
   const { saveMenu } = useSavedMenus(user?.id);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
-  // If user is already signed in, save directly
-  const handleSave = async () => {
-    if (!menu) return;
-    if (!user) {
-      setOpen(true);
-      return;
-    }
+  const buildPayload = (menuData?: any) => {
+    const m = menuData || menu;
+    if (!m) return null;
+    return {
+      menu_title: m.menuTitle || "Untitled Menu",
+      menu_data: m,
+      guests: menuData?.guests ?? guests,
+      ingredients: menuData?.ingredients ?? ingredients,
+      effort: menuData?.effort ?? effort,
+      skill: menuData?.skill ?? skill,
+      cuisine: menuData?.cuisine ?? cuisine,
+      total_estimated_cost: m.totalEstimatedCost,
+      total_pantry_savings: m.totalPantrySavings,
+    };
+  };
+
+  const doSave = async (payload: ReturnType<typeof buildPayload>) => {
+    if (!payload || savingRef.current) return;
+    savingRef.current = true;
     try {
-      await saveMenu.mutateAsync({
-        menu_title: menu.menuTitle || "Untitled Menu",
-        menu_data: menu,
-        guests,
-        ingredients,
-        effort,
-        skill,
-        cuisine,
-        total_estimated_cost: menu.totalEstimatedCost,
-        total_pantry_savings: menu.totalPantrySavings,
-      });
+      await saveMenu.mutateAsync(payload);
       setSaved(true);
-      toast({ title: "Menu saved! 🎉" });
+      sessionStorage.removeItem(PENDING_MENU_KEY);
+      toast({
+        title: "Saved to your menus 🎉",
+        description: "You can find this in your saved menus.",
+      });
     } catch (err: any) {
       toast({ title: "Failed to save", description: err.message, variant: "destructive" });
+    } finally {
+      savingRef.current = false;
     }
   };
 
-  // Auto-save after auth completes
+  // When user clicks Save
+  const handleSave = async () => {
+    if (!menu) return;
+    if (!user) {
+      // Persist to sessionStorage so it survives OAuth redirects
+      sessionStorage.setItem(PENDING_MENU_KEY, JSON.stringify(buildPayload()));
+      setOpen(true);
+      return;
+    }
+    await doSave(buildPayload());
+  };
+
+  // Auto-save after auth completes (handles both in-dialog email auth and OAuth redirect)
   useEffect(() => {
-    if (user && open && menu && !saved) {
+    if (!user || saved || savingRef.current) return;
+
+    // Check for pending menu from before auth
+    const pending = sessionStorage.getItem(PENDING_MENU_KEY);
+    if (pending) {
+      try {
+        const payload = JSON.parse(pending);
+        setOpen(false);
+        doSave(payload);
+      } catch {
+        sessionStorage.removeItem(PENDING_MENU_KEY);
+      }
+      return;
+    }
+
+    // In-dialog sign-in (menu still in memory)
+    if (open && menu) {
       setOpen(false);
-      handleSave();
+      doSave(buildPayload());
     }
   }, [user]);
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
+      // Ensure menu is persisted before redirect
+      if (menu) {
+        sessionStorage.setItem(PENDING_MENU_KEY, JSON.stringify(buildPayload()));
+      }
       const { lovable } = await import("@/integrations/lovable");
       const result = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: window.location.origin,
@@ -94,9 +139,8 @@ const SaveMenuNudge = ({ menu, guests, ingredients, effort, skill, cuisine }: Sa
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        toast({ title: "Welcome back! 🎉" });
+        // Auto-save will trigger via useEffect when user state updates
       }
-      setOpen(false);
     } catch (err: any) {
       toast({ title: "Oops", description: err.message, variant: "destructive" });
     }
@@ -108,12 +152,21 @@ const SaveMenuNudge = ({ menu, guests, ingredients, effort, skill, cuisine }: Sa
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center space-y-2 pt-2 pb-2"
+        className="text-center space-y-3 pt-2 pb-2"
       >
         <div className="flex items-center justify-center gap-2 text-secondary">
           <Check className="w-4 h-4" />
-          <span className="text-sm font-semibold">Menu saved!</span>
+          <span className="text-sm font-semibold">Saved to your menus 🎉</span>
         </div>
+        <p className="text-xs text-muted-foreground">You can find this in your saved menus.</p>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-xs font-semibold"
+          onClick={() => navigate("/")}
+        >
+          View saved menus →
+        </Button>
       </motion.div>
     );
   }
@@ -146,7 +199,7 @@ const SaveMenuNudge = ({ menu, guests, ingredients, effort, skill, cuisine }: Sa
             </div>
             <DialogTitle className="font-display text-lg">Save your menu</DialogTitle>
             <DialogDescription className="text-muted-foreground text-sm">
-              Save your menu to revisit or reuse anytime
+              Sign in to save — your menu won't be lost
             </DialogDescription>
           </DialogHeader>
 
