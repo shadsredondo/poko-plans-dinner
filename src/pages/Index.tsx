@@ -145,15 +145,19 @@ const Index = () => {
           <PokoAvatar size="sm" animate={false} />
           <span className="font-display font-bold text-foreground">Poko</span>
         </div>
-        {step !== "welcome" && (
-          <div className="flex items-center gap-3">
-            <button onClick={handleReset} className="text-muted-foreground hover:text-foreground transition-colors">
+        <div className="flex items-center gap-3">
+          {step !== "welcome" && (
+            <button onClick={handleReset} className="text-muted-foreground hover:text-foreground transition-colors" title="Start over">
               <RotateCcw className="w-4 h-4" />
             </button>
-            <AccountMenu />
-          </div>
-        )}
-        {step === "welcome" && <AccountMenu />}
+          )}
+          {user && (
+            <button onClick={() => navigate("/")} className="text-muted-foreground hover:text-foreground transition-colors" title="My Menus">
+              <BookOpen className="w-4 h-4" />
+            </button>
+          )}
+          <AccountMenu />
+        </div>
       </header>
       <ReturningUserBanner />
 
