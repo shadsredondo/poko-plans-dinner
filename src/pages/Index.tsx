@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Send, Loader2, RotateCcw } from "lucide-react";
+import { Send, Loader2, RotateCcw, Mic, MicOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import PokoAvatar from "@/components/PokoAvatar";
 import ChatBubble from "@/components/ChatBubble";
@@ -9,6 +9,8 @@ import SaveMenuNudge from "@/components/SaveMenuNudge";
 import AccountMenu from "@/components/AccountMenu";
 import ReturningUserBanner from "@/components/ReturningUserBanner";
 import { useToast } from "@/hooks/use-toast";
+import { useVoiceDictation } from "@/hooks/useVoiceDictation";
+import { cleanIngredients } from "@/lib/cleanIngredients";
 
 type Step = "welcome" | "guests" | "ingredients" | "effort" | "skill" | "cuisine" | "generating" | "results";
 
