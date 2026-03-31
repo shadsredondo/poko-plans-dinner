@@ -23,7 +23,7 @@ function timeAgo(dateStr: string): string {
 }
 
 const SavedMenus = () => {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const { data: menus, isLoading, deleteMenu } = useSavedMenus(user?.id);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const navigate = useNavigate();
