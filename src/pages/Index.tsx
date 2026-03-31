@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Send, Loader2, RotateCcw } from "lucide-react";
+import { Send, Loader2, RotateCcw, Mic, MicOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import PokoAvatar from "@/components/PokoAvatar";
 import ChatBubble from "@/components/ChatBubble";
@@ -9,6 +9,8 @@ import SaveMenuNudge from "@/components/SaveMenuNudge";
 import AccountMenu from "@/components/AccountMenu";
 import ReturningUserBanner from "@/components/ReturningUserBanner";
 import { useToast } from "@/hooks/use-toast";
+import { useVoiceDictation } from "@/hooks/useVoiceDictation";
+import { cleanIngredients } from "@/lib/cleanIngredients";
 
 type Step = "welcome" | "guests" | "ingredients" | "effort" | "skill" | "cuisine" | "generating" | "results";
 
@@ -45,6 +47,11 @@ const Index = () => {
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
   const { toast } = useToast();
 
+  const handleVoiceResult = useCallback((text: string) => {
+    setInputValue(text);
+  }, []);
+  const voice = useVoiceDictation(handleVoiceResult);
+
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [step, menu]);
@@ -66,7 +73,9 @@ const Index = () => {
   const handleSubmitIngredients = () => {
     const val = inputValue.trim();
     if (!val) return;
-    setIngredients(val);
+    if (voice.isListening) voice.stop();
+    const cleaned = cleanIngredients(val);
+    setIngredients(cleaned || val);
     setInputValue("");
     setStep("effort");
   };
@@ -318,15 +327,56 @@ const Index = () => {
         >
           <div className="flex items-end gap-2">
             {step === "ingredients" ? (
-              <textarea
-                ref={inputRef as React.RefObject<HTMLTextAreaElement>}
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="chicken, rice, some sad tomatoes, half a lemon..."
-                rows={2}
-                className="flex-1 bg-background border border-input rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
-              />
+              <div className="flex-1 flex flex-col gap-1.5">
+                <div className="relative">
+                  <textarea
+                    ref={inputRef as React.RefObject<HTMLTextAreaElement>}
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Type or say what's in your fridge…"
+                    rows={2}
+                    className="w-full bg-background border border-input rounded-xl px-4 py-3 pr-11 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                  />
+                  {voice.isSupported && (
+                    <button
+                      type="button"
+                      onClick={voice.toggle}
+                      className={`absolute right-2.5 bottom-2.5 p-1.5 rounded-full transition-colors ${
+                        voice.isListening
+                          ? "bg-destructive/10 text-destructive"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      }`}
+                      aria-label={voice.isListening ? "Stop listening" : "Start voice input"}
+                    >
+                      {voice.isListening ? (
+                        <motion.div
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ repeat: Infinity, duration: 1.2 }}
+                        >
+                          <MicOff className="w-4 h-4" />
+                        </motion.div>
+                      ) : (
+                        <Mic className="w-4 h-4" />
+                      )}
+                    </button>
+                  )}
+                </div>
+                {voice.isListening && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-xs text-destructive font-medium pl-1"
+                  >
+                    Listening… speak your ingredients
+                  </motion.p>
+                )}
+                {!voice.isListening && voice.isSupported && !inputValue && (
+                  <p className="text-xs text-muted-foreground pl-1">
+                    You can tap the mic and just speak your ingredients
+                  </p>
+                )}
+              </div>
             ) : (
               <input
                 ref={inputRef as React.RefObject<HTMLInputElement>}
