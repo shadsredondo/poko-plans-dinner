@@ -40,6 +40,7 @@ const Index = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>("welcome");
+  const [ingredients, setIngredients] = useState("");
   const [guests, setGuests] = useState("");
   const [effort, setEffort] = useState("");
   const [skill, setSkill] = useState("");
