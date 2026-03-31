@@ -279,7 +279,14 @@ const Index = () => {
           {step === "results" && menu && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <MenuResults menu={menu} />
-              <SaveMenuNudge />
+              <SaveMenuNudge
+                menu={menu}
+                guests={Number(guests)}
+                ingredients={ingredients}
+                effort={effort}
+                skill={skill}
+                cuisine={cuisine}
+              />
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
