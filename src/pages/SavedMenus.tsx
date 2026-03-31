@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChefHat, Wallet, Clock, RotateCcw, LogOut, Trash2, X } from "lucide-react";
+import { ChefHat, Wallet, Clock, RotateCcw, Trash2, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useSavedMenus, type SavedMenu } from "@/hooks/useSavedMenus";
