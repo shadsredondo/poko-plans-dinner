@@ -113,6 +113,19 @@ const SavedMenus = () => {
           </p>
         </motion.div>
 
+        <motion.button
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
+          onClick={() => navigate("/new")}
+          className="w-full bg-primary text-primary-foreground py-3.5 rounded-2xl font-bold text-sm shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center gap-2 mb-6"
+        >
+          <ChefHat className="w-4 h-4" />
+          Design new menu
+        </motion.button>
+
         {isLoading ? (
           <div className="flex justify-center py-16">
             <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
