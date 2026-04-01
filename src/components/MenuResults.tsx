@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ShoppingCart, ClipboardList, Leaf, ChevronRight, Wallet } from "lucide-react";
+import { ShoppingCart, Leaf, ChevronRight, Wallet, Clock, Flame, UtensilsCrossed, PartyPopper, ChefHat } from "lucide-react";
 import RecipeVideos from "./RecipeVideos";
 
 interface Ingredient {
@@ -236,21 +236,80 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
-          className="bg-menu-card rounded-xl border border-menu-border p-4"
+          className="space-y-3"
         >
-          <div className="flex items-center gap-2 mb-3">
-            <ClipboardList className="w-4 h-4 text-menu-accent" />
-            <h3 className="font-display font-bold text-foreground text-sm">Plan</h3>
+          <div className="flex items-center gap-2">
+            <Clock className="w-4 h-4 text-menu-accent" />
+            <h3 className="font-display font-bold text-foreground text-sm">Your Hosting Timeline</h3>
           </div>
-          <div className="space-y-2.5">
-            {planItems.map((item, i) => (
-              <div key={i} className="flex gap-3 items-baseline">
-                <span className="text-[11px] font-bold text-menu-accent-foreground bg-menu-accent-light px-2.5 py-1 rounded-md min-w-[105px] text-center whitespace-nowrap">
-                  {item.time}
-                </span>
-                <span className="text-sm text-foreground leading-snug">{item.task}</span>
-              </div>
-            ))}
+          <div className="relative">
+            <div
+              className="flex gap-0 overflow-x-auto pb-3 scrollbar-hide"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+              {planItems.map((item, i) => {
+                const isLast = i === planItems.length - 1;
+                const isServe = isLast || item.task.toLowerCase().includes("serve");
+                const taskLower = item.task.toLowerCase();
+                const icon = isServe
+                  ? PartyPopper
+                  : taskLower.includes("cook") || taskLower.includes("roast") || taskLower.includes("bake") || taskLower.includes("heat") || taskLower.includes("boil") || taskLower.includes("simmer") || taskLower.includes("fry")
+                    ? Flame
+                  : taskLower.includes("plate") || taskLower.includes("arrange") || taskLower.includes("garnish")
+                    ? UtensilsCrossed
+                    : ChefHat;
+                const Icon = icon;
+
+                return (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.85 + i * 0.07 }}
+                    className="flex items-center shrink-0"
+                  >
+                    {/* Step card */}
+                    <div
+                      className={`flex flex-col items-center text-center gap-2 rounded-2xl border px-4 py-4 ${
+                        isServe
+                          ? "bg-menu-accent/10 border-menu-accent/30 min-w-[130px]"
+                          : "bg-menu-card border-menu-border min-w-[110px]"
+                      }`}
+                      style={{ maxWidth: isServe ? 150 : 130 }}
+                    >
+                      <div
+                        className={`rounded-full p-2 ${
+                          isServe
+                            ? "bg-menu-accent/20"
+                            : "bg-menu-accent-light"
+                        }`}
+                      >
+                        <Icon className={`w-4 h-4 ${isServe ? "text-menu-accent" : "text-menu-accent-foreground"}`} />
+                      </div>
+                      <span className="text-[10px] font-bold text-menu-accent-foreground bg-menu-accent-light px-2 py-0.5 rounded-full whitespace-nowrap">
+                        {item.time}
+                      </span>
+                      <span className={`text-[12px] leading-snug font-medium line-clamp-2 ${
+                        isServe ? "text-foreground font-bold" : "text-muted-foreground"
+                      }`}>
+                        {item.task}
+                      </span>
+                      {isServe && (
+                        <span className="text-lg">🎉</span>
+                      )}
+                    </div>
+
+                    {/* Connector line */}
+                    {!isLast && (
+                      <div className="flex items-center px-1 shrink-0">
+                        <div className="w-6 border-t-2 border-dashed border-menu-border" />
+                        <ChevronRight className="w-3 h-3 text-muted-foreground -ml-1" />
+                      </div>
+                    )}
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
         </motion.div>
       )}
