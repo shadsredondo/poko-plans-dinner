@@ -128,7 +128,7 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
         </motion.div>
       )}
 
-      {/* Courses — Horizontal Tiles */}
+      {/* Courses — Dish Cards */}
       <div className="relative">
         <div
           ref={scrollRef}
@@ -137,32 +137,47 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
         >
           {[...menu.courses].sort((a, b) => (b.estimatedCost ?? 0) - (a.estimatedCost ?? 0)).map((course, i) => {
             const ingredients = course.keyIngredients.map(normalizeIngredient);
-            const pantryCount = ingredients.filter(ing => ing.fromPantry).length;
+            const pantryItems = ingredients.filter(ing => ing.fromPantry).slice(0, 4);
+            const buyItems = ingredients.filter(ing => !ing.fromPantry).slice(0, 3);
+            const pantryCount = pantryItems.length;
+
+            // Generate a context line
+            const contextLine = pantryCount >= 3
+              ? "Mostly pantry-friendly"
+              : pantryCount >= 1
+                ? `Great use of your ${pantryItems[0]?.name?.toLowerCase() || "pantry"}`
+                : course.estimatedCost != null && course.estimatedCost <= 5
+                  ? "Low effort, high impact"
+                  : "A crowd-pleaser";
+
             return (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, x: 24 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 + i * 0.08 }}
-                className="snap-start shrink-0 w-[280px] min-w-[280px] bg-menu-card rounded-2xl border border-menu-border overflow-hidden flex flex-col"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + i * 0.1 }}
+                whileHover={{ scale: 1.02, y: -4 }}
+                className="snap-start shrink-0 w-[280px] min-w-[280px] bg-menu-card rounded-2xl border border-menu-border overflow-hidden flex flex-col shadow-sm hover:shadow-md transition-shadow duration-300 cursor-default"
               >
-                {/* Header */}
-                <div className="px-5 pt-5 pb-0">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-menu-course-label">
+                {/* Course label + Dish name */}
+                <div className="px-5 pt-5 pb-1">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-menu-course-label/60">
                     {courseLabels[course.type] || course.type}
                   </span>
-                  <h3 className="font-display font-bold text-foreground text-lg leading-tight mt-1.5">{course.name}</h3>
+                  <h3 className="font-display font-bold text-foreground text-xl leading-tight mt-1 line-clamp-2">
+                    {course.name}
+                  </h3>
                 </div>
 
-                {/* Visual — ingredient emoji mosaic */}
-                <div className="flex items-center justify-center gap-3 py-5 px-5">
-                  {ingredients.slice(0, 5).map((ing, j) => (
+                {/* Emoji visual row */}
+                <div className="flex items-center gap-2.5 px-5 py-3">
+                  {ingredients.slice(0, 4).map((ing, j) => (
                     <motion.span
                       key={j}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ delay: 0.25 + i * 0.08 + j * 0.06, type: "spring", stiffness: 300 }}
-                      className="text-3xl drop-shadow-sm"
+                      className="text-2xl"
                       title={ing.name}
                     >
                       {getIngredientEmoji(ing.name)}
@@ -170,28 +185,46 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
                   ))}
                 </div>
 
-                {/* Ingredient pills */}
-                <div className="flex flex-wrap gap-1.5 px-5 pb-4">
-                  {ingredients.slice(0, 5).map((ing, j) => (
-                    <span
-                      key={j}
-                      className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${
-                        ing.fromPantry
-                          ? "bg-secondary/15 text-secondary border border-secondary/25"
-                          : "bg-menu-tag text-muted-foreground"
-                      }`}
-                    >
-                      {ing.name}
-                    </span>
-                  ))}
+                {/* Ingredient tags — grouped */}
+                <div className="px-5 pb-3 space-y-2">
+                  {pantryItems.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {pantryItems.map((ing, j) => (
+                        <span
+                          key={`p-${j}`}
+                          className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-secondary/15 text-secondary border border-secondary/25"
+                        >
+                          {ing.name}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {buyItems.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {buyItems.map((ing, j) => (
+                        <span
+                          key={`b-${j}`}
+                          className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-menu-tag text-muted-foreground"
+                        >
+                          {ing.name}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                {/* Value signal footer */}
+                {/* Context line */}
+                <div className="px-5 pb-3">
+                  <p className="text-xs text-muted-foreground italic">
+                    {contextLine}
+                  </p>
+                </div>
+
+                {/* Value footer */}
                 <div className="mt-auto border-t border-menu-border px-5 py-3 flex items-center gap-1.5">
-                  <Wallet className="w-3.5 h-3.5 text-menu-savings" />
                   <span className="text-xs font-semibold text-menu-savings">
                     {course.pantrySavings != null && course.pantrySavings > 0
-                      ? `Saved ~$${course.pantrySavings} using your pantry`
+                      ? `💸 Saved ~$${course.pantrySavings} using your pantry`
                       : course.estimatedCost != null
                         ? `~$${course.estimatedCost}`
                         : ""}
