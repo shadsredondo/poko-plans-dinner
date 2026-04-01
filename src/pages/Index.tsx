@@ -36,20 +36,43 @@ const cuisineOptions = [
   { label: "Surprise me 🎲", value: "surprise" },
 ];
 
+const CHAT_STATE_KEY = "poko_chat_state";
+
+const loadChatState = () => {
+  try {
+    const saved = sessionStorage.getItem(CHAT_STATE_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch {}
+  return null;
+};
+
 const Index = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [step, setStep] = useState<Step>("welcome");
-  const [ingredients, setIngredients] = useState("");
-  const [guests, setGuests] = useState("");
-  const [effort, setEffort] = useState("");
-  const [skill, setSkill] = useState("");
-  const [cuisine, setCuisine] = useState("");
-  const [menu, setMenu] = useState<any>(null);
+  const saved = useRef(loadChatState());
+  const [step, setStep] = useState<Step>(saved.current?.step || "welcome");
+  const [ingredients, setIngredients] = useState(saved.current?.ingredients || "");
+  const [guests, setGuests] = useState(saved.current?.guests || "");
+  const [effort, setEffort] = useState(saved.current?.effort || "");
+  const [skill, setSkill] = useState(saved.current?.skill || "");
+  const [cuisine, setCuisine] = useState(saved.current?.cuisine || "");
+  const [menu, setMenu] = useState<any>(saved.current?.menu || null);
   const [inputValue, setInputValue] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
   const { toast } = useToast();
+
+  // Persist chat state to sessionStorage
+  useEffect(() => {
+    if (step === "welcome") {
+      sessionStorage.removeItem(CHAT_STATE_KEY);
+      return;
+    }
+    sessionStorage.setItem(CHAT_STATE_KEY, JSON.stringify({
+      step: step === "generating" ? "cuisine" : step,
+      guests, ingredients, effort, skill, cuisine, menu,
+    }));
+  }, [step, guests, ingredients, effort, skill, cuisine, menu]);
 
   const handleVoiceResult = useCallback((text: string) => {
     setInputValue(text);
