@@ -233,6 +233,9 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
         </motion.div>
       )}
 
+      {/* Recipe Videos */}
+      <RecipeVideos dishes={menu.courses.map(c => c.name)} />
+
       {/* Poko Comment */}
       {comment && (
         <motion.div
