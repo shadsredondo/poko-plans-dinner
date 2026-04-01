@@ -179,7 +179,7 @@ const Index = () => {
                   Hi, I'm Poko 👀
                 </h1>
                 <p className="text-muted-foreground leading-relaxed max-w-xs">
-                  Give me your random fridge situation, I'll turn it into a dinner party.
+                  Give me your random fridge and pantry situation, I'll turn it into a dinner party.
                 </p>
               </div>
               <motion.button
