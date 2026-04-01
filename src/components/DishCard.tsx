@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Youtube, ExternalLink, Clock } from "lucide-react";
+import { Youtube, Clock, Play, X } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Ingredient {
   name: string;
