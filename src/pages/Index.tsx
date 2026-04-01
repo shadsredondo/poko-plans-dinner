@@ -143,6 +143,7 @@ const Index = () => {
   };
 
   const handleReset = () => {
+    sessionStorage.removeItem(CHAT_STATE_KEY);
     setStep("welcome");
     setGuests("");
     setIngredients("");
