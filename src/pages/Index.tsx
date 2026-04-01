@@ -142,9 +142,19 @@ const Index = () => {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-3 border-b border-border bg-card">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <PokoAvatar size="sm" animate={false} />
           <span className="font-display font-bold text-foreground">Poko</span>
+          {user && (
+            <button
+              onClick={() => navigate("/")}
+              className="flex items-center gap-1.5 bg-primary/10 text-primary hover:bg-primary/20 transition-colors rounded-full px-3 py-1.5"
+              title="My Menus"
+            >
+              <BookOpen className="w-4 h-4" />
+              <span className="text-sm font-bold font-display">My Menus</span>
+            </button>
+          )}
         </div>
         <div className="flex items-center gap-3">
           {step !== "welcome" && (
