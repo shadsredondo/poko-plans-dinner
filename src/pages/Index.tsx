@@ -162,10 +162,6 @@ const Index = () => {
               <RotateCcw className="w-4 h-4" />
             </button>
           )}
-          {user && (
-            <button onClick={() => navigate("/")} className="text-muted-foreground hover:text-foreground transition-colors" title="My Menus">
-              <BookOpen className="w-4 h-4" />
-            </button>
           )}
           <AccountMenu />
         </div>
