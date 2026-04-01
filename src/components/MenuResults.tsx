@@ -126,7 +126,7 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
           className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          {menu.courses.map((course, i) => {
+          {[...menu.courses].sort((a, b) => (b.estimatedCost ?? 0) - (a.estimatedCost ?? 0)).map((course, i) => {
             const ingredients = course.keyIngredients.map(normalizeIngredient);
             const pantryCount = ingredients.filter(ing => ing.fromPantry).length;
             return (
@@ -178,22 +178,15 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
                 </div>
 
                 {/* Value signal footer */}
-                <div className="mt-auto border-t border-menu-border px-5 py-3 flex items-center justify-between">
-                  {course.pantrySavings != null && course.pantrySavings > 0 ? (
-                    <div className="flex items-center gap-1.5">
-                      <Wallet className="w-3.5 h-3.5 text-secondary" />
-                      <span className="text-xs font-semibold text-secondary">
-                        Saved ~${course.pantrySavings} from pantry
-                      </span>
-                    </div>
-                  ) : course.estimatedCost != null ? (
-                    <span className="text-xs text-muted-foreground font-medium">~${course.estimatedCost}</span>
-                  ) : (
-                    <span />
-                  )}
-                  {pantryCount > 0 && (
-                    <span className="text-[10px] font-medium text-secondary/70">{pantryCount} from fridge</span>
-                  )}
+                <div className="mt-auto border-t border-menu-border px-5 py-3 flex items-center gap-1.5">
+                  <Wallet className="w-3.5 h-3.5 text-secondary" />
+                  <span className="text-xs font-semibold text-secondary">
+                    {course.pantrySavings != null && course.pantrySavings > 0
+                      ? `Saved ~$${course.pantrySavings} using your pantry`
+                      : course.estimatedCost != null
+                        ? `~$${course.estimatedCost}`
+                        : ""}
+                  </span>
                 </div>
               </motion.div>
             );
