@@ -88,6 +88,7 @@ const DishCard = ({
   index,
 }: DishCardProps) => {
   const [hovered, setHovered] = useState(false);
+  const [videoOpen, setVideoOpen] = useState(false);
 
   const pantryItems = ingredients.filter((ing) => ing.fromPantry).slice(0, 4);
   const buyItems = ingredients.filter((ing) => !ing.fromPantry).slice(0, 3);
