@@ -123,56 +123,76 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
       <div className="relative">
         <div
           ref={scrollRef}
-          className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide"
+          className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {menu.courses.map((course, i) => {
             const ingredients = course.keyIngredients.map(normalizeIngredient);
+            const pantryCount = ingredients.filter(ing => ing.fromPantry).length;
             return (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, x: 24 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1 + i * 0.08 }}
-                className="snap-start shrink-0 w-[calc(50%-6px)] min-w-[260px] bg-menu-card rounded-2xl border border-menu-border p-6 flex flex-col justify-between"
+                className="snap-start shrink-0 w-[280px] min-w-[280px] bg-menu-card rounded-2xl border border-menu-border overflow-hidden flex flex-col"
               >
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-menu-accent">
+                {/* Header */}
+                <div className="px-5 pt-5 pb-0">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-menu-accent">
                     {courseLabels[course.type] || course.type}
                   </span>
-                  <h3 className="font-display font-bold text-foreground text-base leading-snug mt-2">{course.name}</h3>
-                  <p className="text-[13px] text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">{course.description}</p>
-                  <div className="flex gap-2 mt-4">
-                    {ingredients.slice(0, 3).map((ing, j) => (
-                      <span
-                        key={j}
-                        className={`flex flex-col items-center gap-0.5 rounded-lg px-2 py-1.5 min-w-[52px] border ${
-                          ing.fromPantry
-                            ? "bg-secondary/10 border-secondary/30"
-                            : "bg-menu-tag border-transparent"
-                        }`}
-                      >
-                        <span className="text-lg leading-none">{getIngredientEmoji(ing.name)}</span>
-                        <span className={`text-[9px] font-medium truncate max-w-[48px] ${
-                          ing.fromPantry ? "text-secondary" : "text-muted-foreground"
-                        }`}>
-                          {ing.name}
-                        </span>
-                      </span>
-                    ))}
-                  </div>
+                  <h3 className="font-display font-bold text-foreground text-lg leading-tight mt-1.5">{course.name}</h3>
                 </div>
-                {/* Per-dish cost & savings */}
-                <div className="mt-3 flex flex-col gap-0.5">
-                  {course.estimatedCost != null && (
-                    <span className="text-[11px] text-muted-foreground font-medium">
-                      Est. ~${course.estimatedCost}
+
+                {/* Visual — ingredient emoji mosaic */}
+                <div className="flex items-center justify-center gap-3 py-5 px-5">
+                  {ingredients.slice(0, 5).map((ing, j) => (
+                    <motion.span
+                      key={j}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.25 + i * 0.08 + j * 0.06, type: "spring", stiffness: 300 }}
+                      className="text-3xl drop-shadow-sm"
+                      title={ing.name}
+                    >
+                      {getIngredientEmoji(ing.name)}
+                    </motion.span>
+                  ))}
+                </div>
+
+                {/* Ingredient pills */}
+                <div className="flex flex-wrap gap-1.5 px-5 pb-4">
+                  {ingredients.slice(0, 5).map((ing, j) => (
+                    <span
+                      key={j}
+                      className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${
+                        ing.fromPantry
+                          ? "bg-secondary/15 text-secondary border border-secondary/25"
+                          : "bg-menu-tag text-muted-foreground"
+                      }`}
+                    >
+                      {ing.name}
                     </span>
+                  ))}
+                </div>
+
+                {/* Value signal footer */}
+                <div className="mt-auto border-t border-menu-border px-5 py-3 flex items-center justify-between">
+                  {course.pantrySavings != null && course.pantrySavings > 0 ? (
+                    <div className="flex items-center gap-1.5">
+                      <Wallet className="w-3.5 h-3.5 text-secondary" />
+                      <span className="text-xs font-semibold text-secondary">
+                        Saved ~${course.pantrySavings} from pantry
+                      </span>
+                    </div>
+                  ) : course.estimatedCost != null ? (
+                    <span className="text-xs text-muted-foreground font-medium">~${course.estimatedCost}</span>
+                  ) : (
+                    <span />
                   )}
-                  {course.pantrySavings != null && course.pantrySavings > 0 && (
-                    <span className="text-[11px] text-secondary font-semibold">
-                      Saved ~${course.pantrySavings} from your pantry
-                    </span>
+                  {pantryCount > 0 && (
+                    <span className="text-[10px] font-medium text-secondary/70">{pantryCount} from fridge</span>
                   )}
                 </div>
               </motion.div>
