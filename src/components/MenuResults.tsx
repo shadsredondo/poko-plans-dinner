@@ -1,7 +1,8 @@
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ShoppingCart, Leaf, ChevronRight, Wallet, Clock, Flame, UtensilsCrossed, PartyPopper, ChefHat } from "lucide-react";
-import RecipeVideos from "./RecipeVideos";
+import { Leaf, Wallet, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import DishCard from "./DishCard";
 
 interface Ingredient {
   name: string;
@@ -37,44 +38,12 @@ interface MenuData {
   totalPantrySavings?: number;
 }
 
-const courseLabels: Record<string, string> = {
-  starter: "Starter",
-  main: "Main",
-  side: "Side",
-  dessert: "Dessert",
-};
-
-const ingredientEmojis: Record<string, string> = {
-  chicken: "🍗", beef: "🥩", pork: "🥩", lamb: "🐑", fish: "🐟", salmon: "🍣",
-  shrimp: "🦐", prawn: "🦐", rice: "🍚", pasta: "🍝", noodles: "🍜",
-  bread: "🍞", egg: "🥚", eggs: "🥚", cheese: "🧀", butter: "🧈", milk: "🥛",
-  cream: "🍶", tomato: "🍅", tomatoes: "🍅", potato: "🥔", potatoes: "🥔",
-  onion: "🧅", garlic: "🧄", carrot: "🥕", broccoli: "🥦", corn: "🌽",
-  mushroom: "🍄", mushrooms: "🍄", pepper: "🫑", avocado: "🥑",
-  lemon: "🍋", lime: "🍋", orange: "🍊", apple: "🍎", banana: "🍌",
-  strawberry: "🍓", coconut: "🥥", chocolate: "🍫", honey: "🍯",
-  sugar: "🍬", salt: "🧂", olive: "🫒", oil: "🫒", tofu: "🧊",
-  lettuce: "🥬", spinach: "🥬", cucumber: "🥒", eggplant: "🍆",
-  peas: "🫛", beans: "🫘", chili: "🌶️", ginger: "🫚", herb: "🌿",
-  herbs: "🌿", basil: "🌿", cilantro: "🌿", mint: "🌿", wine: "🍷",
-  soy: "🥫", sauce: "🥫", vinegar: "🥫",
-  cinnamon: "🫚", nutmeg: "🫚", cumin: "🫚", paprika: "🌶️",
-  flour: "🌾", wheat: "🌾", oat: "🌾", barley: "🌾",
-  peanut: "🥜", almond: "🥜", walnut: "🥜", cashew: "🥜", nut: "🥜",
-  peach: "🍑", mango: "🥭", pineapple: "🍍", grape: "🍇", cherry: "🍒",
-  melon: "🍈", pear: "🍐", kiwi: "🥝",
-  bacon: "🥓", ham: "🥓", turkey: "🦃", duck: "🦆",
-  crab: "🦀", lobster: "🦞", squid: "🦑", oyster: "🦪",
-  yogurt: "🥛", pie: "🥧", cake: "🎂", cookie: "🍪",
-  coffee: "☕", tea: "🍵",
-};
-
-function getIngredientEmoji(ingredient: string): string {
-  const lower = ingredient.toLowerCase();
-  for (const [key, emoji] of Object.entries(ingredientEmojis)) {
-    if (lower.includes(key)) return emoji;
-  }
-  return "🍽️";
+interface Video {
+  dish: string;
+  videoId: string;
+  title: string;
+  thumbnail: string;
+  channelTitle: string;
 }
 
 function normalizeIngredient(ing: Ingredient | string): Ingredient {
@@ -84,18 +53,49 @@ function normalizeIngredient(ing: Ingredient | string): Ingredient {
   return ing;
 }
 
+/** Try to match a timeline step to a dish name */
+function findPrepStep(dishName: string, planItems: PlanItem[]): PlanItem | undefined {
+  const lower = dishName.toLowerCase();
+  const words = lower.split(/\s+/).filter((w) => w.length > 3);
+  return planItems.find((item) => {
+    const taskLower = item.task.toLowerCase();
+    return words.some((word) => taskLower.includes(word));
+  });
+}
+
 const MenuResults = ({ menu }: { menu: MenuData }) => {
   const planItems = menu.plan || menu.timeline || [];
   const comment = menu.pokoComment || menu.pokoTip || menu.pokoReaction;
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScroll, setCanScroll] = useState(false);
+
+  // Fetch recipe videos and distribute per dish
+  const [videos, setVideos] = useState<Video[]>([]);
+  const [videosLoading, setVideosLoading] = useState(true);
 
   useEffect(() => {
-    const el = scrollRef.current;
-    if (el) {
-      setCanScroll(el.scrollWidth > el.clientWidth);
-    }
+    const dishes = menu.courses.map((c) => c.name);
+    if (!dishes.length) return;
+
+    const fetchVideos = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke("search-recipe-videos", {
+          body: { dishes },
+        });
+        if (error) throw error;
+        setVideos(data?.videos || []);
+      } catch (err) {
+        console.error("Failed to fetch recipe videos:", err);
+      } finally {
+        setVideosLoading(false);
+      }
+    };
+
+    fetchVideos();
   }, [menu.courses]);
+
+  function getVideoForDish(dishName: string): Video | undefined {
+    const lower = dishName.toLowerCase();
+    return videos.find((v) => v.dish.toLowerCase() === lower);
+  }
 
   return (
     <div className="space-y-5">
@@ -110,7 +110,9 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
           <Leaf className="w-4 h-4 text-menu-accent" />
           <div className="w-8 h-px bg-menu-accent/40" />
         </div>
-        <h2 className="font-display text-xl font-bold text-foreground tracking-tight">{menu.menuTitle}</h2>
+        <h2 className="font-display text-xl font-bold text-foreground tracking-tight">
+          {menu.menuTitle}
+        </h2>
       </motion.div>
 
       {/* Overall Savings Banner */}
@@ -128,227 +130,36 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
         </motion.div>
       )}
 
-      {/* Courses — Dish Cards */}
-      <div className="relative">
-        <div
-          ref={scrollRef}
-          className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-        >
-          {[...menu.courses].sort((a, b) => (b.estimatedCost ?? 0) - (a.estimatedCost ?? 0)).map((course, i) => {
-            const ingredients = course.keyIngredients.map(normalizeIngredient);
-            const pantryItems = ingredients.filter(ing => ing.fromPantry).slice(0, 4);
-            const buyItems = ingredients.filter(ing => !ing.fromPantry).slice(0, 3);
-            const pantryCount = pantryItems.length;
-
-            // Generate a context line
-            const contextLine = pantryCount >= 3
-              ? "Mostly pantry-friendly"
-              : pantryCount >= 1
-                ? `Great use of your ${pantryItems[0]?.name?.toLowerCase() || "pantry"}`
-                : course.estimatedCost != null && course.estimatedCost <= 5
-                  ? "Low effort, high impact"
-                  : "A crowd-pleaser";
-
-            return (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + i * 0.1 }}
-                whileHover={{ scale: 1.02, y: -4 }}
-                className="snap-start shrink-0 w-[280px] min-w-[280px] bg-menu-card rounded-2xl border border-menu-border overflow-hidden flex flex-col shadow-sm hover:shadow-md transition-shadow duration-300 cursor-default"
-              >
-                {/* Course label + Dish name */}
-                <div className="px-5 pt-5 pb-1">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-menu-course-label/60">
-                    {courseLabels[course.type] || course.type}
-                  </span>
-                  <h3 className="font-display font-bold text-foreground text-xl leading-tight mt-1 line-clamp-2">
-                    {course.name}
-                  </h3>
-                </div>
-
-                {/* Emoji visual row */}
-                <div className="flex items-center gap-2.5 px-5 py-3">
-                  {ingredients.slice(0, 4).map((ing, j) => (
-                    <motion.span
-                      key={j}
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.25 + i * 0.08 + j * 0.06, type: "spring", stiffness: 300 }}
-                      className="text-2xl"
-                      title={ing.name}
-                    >
-                      {getIngredientEmoji(ing.name)}
-                    </motion.span>
-                  ))}
-                </div>
-
-                {/* Ingredient tags — grouped */}
-                <div className="px-5 pb-3 space-y-2">
-                  {pantryItems.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5">
-                      {pantryItems.map((ing, j) => (
-                        <span
-                          key={`p-${j}`}
-                          className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-secondary/15 text-secondary border border-secondary/25"
-                        >
-                          {ing.name}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                  {buyItems.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5">
-                      {buyItems.map((ing, j) => (
-                        <span
-                          key={`b-${j}`}
-                          className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-menu-tag text-muted-foreground"
-                        >
-                          {ing.name}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Context line */}
-                <div className="px-5 pb-3">
-                  <p className="text-xs text-muted-foreground italic">
-                    {contextLine}
-                  </p>
-                </div>
-
-                {/* Value footer */}
-                <div className="mt-auto border-t border-menu-border px-5 py-3 flex items-center gap-1.5">
-                  <span className="text-xs font-semibold text-menu-savings">
-                    {course.pantrySavings != null && course.pantrySavings > 0
-                      ? `💸 Saved ~$${course.pantrySavings} using your pantry`
-                      : course.estimatedCost != null
-                        ? `~$${course.estimatedCost}`
-                        : ""}
-                  </span>
-                </div>
-              </motion.div>
-            );
-          })}
+      {/* Loading indicator for videos */}
+      {videosLoading && (
+        <div className="flex items-center justify-center gap-2 text-muted-foreground py-1">
+          <Loader2 className="w-3 h-3 animate-spin" />
+          <span className="text-xs">Finding recipe videos…</span>
         </div>
-        {canScroll && (
-          <div className="absolute right-0 top-0 bottom-2 w-10 flex items-center justify-center pointer-events-none bg-gradient-to-l from-background/80 to-transparent rounded-r-xl">
-            <ChevronRight className="w-4 h-4 text-muted-foreground animate-pulse" />
-          </div>
-        )}
+      )}
+
+      {/* Dish Cards — one card per dish with all info consolidated */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {menu.courses.map((course, i) => {
+          const ingredients = course.keyIngredients.map(normalizeIngredient);
+          const video = getVideoForDish(course.name);
+          const prepStep = findPrepStep(course.name, planItems);
+
+          return (
+            <DishCard
+              key={i}
+              courseType={course.type}
+              name={course.name}
+              ingredients={ingredients}
+              estimatedCost={course.estimatedCost}
+              pantrySavings={course.pantrySavings}
+              video={video}
+              prepStep={prepStep}
+              index={i}
+            />
+          );
+        })}
       </div>
-
-      {/* Shopping List */}
-      {menu.shoppingList.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="bg-menu-card rounded-xl border border-menu-border p-4"
-        >
-          <div className="flex items-center gap-2 mb-3">
-            <ShoppingCart className="w-4 h-4 text-menu-accent" />
-            <h3 className="font-display font-bold text-foreground text-sm">Shopping List</h3>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {menu.shoppingList.map((item, i) => (
-              <span key={i} className="text-sm bg-menu-tag text-foreground px-3 py-1 rounded-md font-medium">
-                {item}
-              </span>
-            ))}
-          </div>
-        </motion.div>
-      )}
-
-      {/* Plan */}
-      {planItems.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="space-y-3"
-        >
-          <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-menu-accent" />
-            <h3 className="font-display font-bold text-foreground text-sm">Your Hosting Timeline</h3>
-          </div>
-          <div className="relative">
-            <div
-              className="flex gap-0 overflow-x-auto pb-3 scrollbar-hide"
-              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            >
-              {planItems.map((item, i) => {
-                const isLast = i === planItems.length - 1;
-                const isServe = isLast || item.task.toLowerCase().includes("serve");
-                const taskLower = item.task.toLowerCase();
-                const icon = isServe
-                  ? PartyPopper
-                  : taskLower.includes("cook") || taskLower.includes("roast") || taskLower.includes("bake") || taskLower.includes("heat") || taskLower.includes("boil") || taskLower.includes("simmer") || taskLower.includes("fry")
-                    ? Flame
-                  : taskLower.includes("plate") || taskLower.includes("arrange") || taskLower.includes("garnish")
-                    ? UtensilsCrossed
-                    : ChefHat;
-                const Icon = icon;
-
-                return (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.85 + i * 0.07 }}
-                    className="flex items-center shrink-0"
-                  >
-                    {/* Step card */}
-                    <div
-                      className={`flex flex-col items-center text-center gap-2 rounded-2xl border px-4 py-4 ${
-                        isServe
-                          ? "bg-menu-accent/10 border-menu-accent/30 min-w-[130px]"
-                          : "bg-menu-card border-menu-border min-w-[110px]"
-                      }`}
-                      style={{ maxWidth: isServe ? 150 : 130 }}
-                    >
-                      <div
-                        className={`rounded-full p-2 ${
-                          isServe
-                            ? "bg-menu-accent/20"
-                            : "bg-menu-accent-light"
-                        }`}
-                      >
-                        <Icon className={`w-4 h-4 ${isServe ? "text-menu-accent" : "text-menu-accent-foreground"}`} />
-                      </div>
-                      <span className="text-[10px] font-bold text-menu-accent-foreground bg-menu-accent-light px-2 py-0.5 rounded-full whitespace-nowrap">
-                        {item.time}
-                      </span>
-                      <span className={`text-[12px] leading-snug font-medium line-clamp-2 ${
-                        isServe ? "text-foreground font-bold" : "text-muted-foreground"
-                      }`}>
-                        {item.task}
-                      </span>
-                      {isServe && (
-                        <span className="text-lg">🎉</span>
-                      )}
-                    </div>
-
-                    {/* Connector line */}
-                    {!isLast && (
-                      <div className="flex items-center px-1 shrink-0">
-                        <div className="w-6 border-t-2 border-dashed border-menu-border" />
-                        <ChevronRight className="w-3 h-3 text-muted-foreground -ml-1" />
-                      </div>
-                    )}
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Recipe Videos */}
-      <RecipeVideos dishes={menu.courses.map(c => c.name)} />
 
       {/* Poko Comment */}
       {comment && (
