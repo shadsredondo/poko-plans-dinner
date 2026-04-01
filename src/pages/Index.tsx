@@ -13,6 +13,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useVoiceDictation } from "@/hooks/useVoiceDictation";
 import { cleanIngredients } from "@/lib/cleanIngredients";
+import { clearChatState, loadChatState, saveChatState } from "@/lib/chatStorage";
 
 type Step = "welcome" | "guests" | "ingredients" | "effort" | "skill" | "cuisine" | "generating" | "results";
 
@@ -36,44 +37,6 @@ const cuisineOptions = [
   { label: "Surprise me 🎲", value: "surprise" },
 ];
 
-const CHAT_STATE_KEY = "poko_chat_state";
-
-const safeStorage = {
-  getItem(key: string) {
-    try {
-      return localStorage.getItem(key) ?? sessionStorage.getItem(key);
-    } catch {
-      return null;
-    }
-  },
-  setItem(key: string, value: string) {
-    try {
-      localStorage.setItem(key, value);
-    } catch {}
-
-    try {
-      sessionStorage.setItem(key, value);
-    } catch {}
-  },
-  removeItem(key: string) {
-    try {
-      localStorage.removeItem(key);
-    } catch {}
-
-    try {
-      sessionStorage.removeItem(key);
-    } catch {}
-  },
-};
-
-const loadChatState = () => {
-  try {
-    const saved = safeStorage.getItem(CHAT_STATE_KEY);
-    if (saved) return JSON.parse(saved);
-  } catch {}
-  return null;
-};
-
 const Index = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -93,13 +56,13 @@ const Index = () => {
   // Persist chat state to sessionStorage
   useEffect(() => {
     if (step === "welcome") {
-      safeStorage.removeItem(CHAT_STATE_KEY);
+      clearChatState();
       return;
     }
-    safeStorage.setItem(CHAT_STATE_KEY, JSON.stringify({
+    saveChatState({
       step: step === "generating" ? "cuisine" : step,
       guests, ingredients, effort, skill, cuisine, menu, inputValue,
-    }));
+    });
   }, [step, guests, ingredients, effort, skill, cuisine, menu, inputValue]);
 
   const handleVoiceResult = useCallback((text: string) => {
@@ -171,7 +134,7 @@ const Index = () => {
   };
 
   const handleReset = () => {
-    safeStorage.removeItem(CHAT_STATE_KEY);
+    clearChatState();
     setStep("welcome");
     setGuests("");
     setIngredients("");

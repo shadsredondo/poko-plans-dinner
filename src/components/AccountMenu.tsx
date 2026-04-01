@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { clearChatState } from "@/lib/chatStorage";
 import { useNavigate } from "react-router-dom";
 
 const AccountMenu = () => {
@@ -20,6 +21,7 @@ const AccountMenu = () => {
 
   const handleSignOut = async () => {
     await signOut();
+    clearChatState();
     toast({ title: "You've been signed out" });
     navigate("/");
   };
