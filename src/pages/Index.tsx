@@ -38,9 +38,37 @@ const cuisineOptions = [
 
 const CHAT_STATE_KEY = "poko_chat_state";
 
+const safeStorage = {
+  getItem(key: string) {
+    try {
+      return localStorage.getItem(key) ?? sessionStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  },
+  setItem(key: string, value: string) {
+    try {
+      localStorage.setItem(key, value);
+    } catch {}
+
+    try {
+      sessionStorage.setItem(key, value);
+    } catch {}
+  },
+  removeItem(key: string) {
+    try {
+      localStorage.removeItem(key);
+    } catch {}
+
+    try {
+      sessionStorage.removeItem(key);
+    } catch {}
+  },
+};
+
 const loadChatState = () => {
   try {
-    const saved = sessionStorage.getItem(CHAT_STATE_KEY);
+    const saved = safeStorage.getItem(CHAT_STATE_KEY);
     if (saved) return JSON.parse(saved);
   } catch {}
   return null;
@@ -57,7 +85,7 @@ const Index = () => {
   const [skill, setSkill] = useState(saved.current?.skill || "");
   const [cuisine, setCuisine] = useState(saved.current?.cuisine || "");
   const [menu, setMenu] = useState<any>(saved.current?.menu || null);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState(saved.current?.inputValue || "");
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
   const { toast } = useToast();
@@ -65,14 +93,14 @@ const Index = () => {
   // Persist chat state to sessionStorage
   useEffect(() => {
     if (step === "welcome") {
-      sessionStorage.removeItem(CHAT_STATE_KEY);
+      safeStorage.removeItem(CHAT_STATE_KEY);
       return;
     }
-    sessionStorage.setItem(CHAT_STATE_KEY, JSON.stringify({
+    safeStorage.setItem(CHAT_STATE_KEY, JSON.stringify({
       step: step === "generating" ? "cuisine" : step,
-      guests, ingredients, effort, skill, cuisine, menu,
+      guests, ingredients, effort, skill, cuisine, menu, inputValue,
     }));
-  }, [step, guests, ingredients, effort, skill, cuisine, menu]);
+  }, [step, guests, ingredients, effort, skill, cuisine, menu, inputValue]);
 
   const handleVoiceResult = useCallback((text: string) => {
     setInputValue(text);
@@ -143,7 +171,7 @@ const Index = () => {
   };
 
   const handleReset = () => {
-    sessionStorage.removeItem(CHAT_STATE_KEY);
+    safeStorage.removeItem(CHAT_STATE_KEY);
     setStep("welcome");
     setGuests("");
     setIngredients("");
