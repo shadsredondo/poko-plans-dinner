@@ -58,6 +58,15 @@ const ingredientEmojis: Record<string, string> = {
   peas: "🫛", beans: "🫘", chili: "🌶️", ginger: "🫚", herb: "🌿",
   herbs: "🌿", basil: "🌿", cilantro: "🌿", mint: "🌿", wine: "🍷",
   soy: "🥫", sauce: "🥫", vinegar: "🥫",
+  cinnamon: "🫚", nutmeg: "🫚", cumin: "🫚", paprika: "🌶️",
+  flour: "🌾", wheat: "🌾", oat: "🌾", barley: "🌾",
+  peanut: "🥜", almond: "🥜", walnut: "🥜", cashew: "🥜", nut: "🥜",
+  peach: "🍑", mango: "🥭", pineapple: "🍍", grape: "🍇", cherry: "🍒",
+  melon: "🍈", pear: "🍐", kiwi: "🥝",
+  bacon: "🥓", ham: "🥓", turkey: "🦃", duck: "🦆",
+  crab: "🦀", lobster: "🦞", squid: "🦑", oyster: "🦪",
+  yogurt: "🥛", pie: "🥧", cake: "🎂", cookie: "🍪",
+  coffee: "☕", tea: "🍵",
 };
 
 function getIngredientEmoji(ingredient: string): string {
@@ -65,7 +74,7 @@ function getIngredientEmoji(ingredient: string): string {
   for (const [key, emoji] of Object.entries(ingredientEmojis)) {
     if (lower.includes(key)) return emoji;
   }
-  return "🥄";
+  return "🍽️";
 }
 
 function normalizeIngredient(ing: Ingredient | string): Ingredient {
