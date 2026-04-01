@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ShoppingCart, ClipboardList, Leaf, ChevronRight, Wallet } from "lucide-react";
+import RecipeVideos from "./RecipeVideos";
 
 interface Ingredient {
   name: string;
@@ -231,6 +232,9 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
           </div>
         </motion.div>
       )}
+
+      {/* Recipe Videos */}
+      <RecipeVideos dishes={menu.courses.map(c => c.name)} />
 
       {/* Poko Comment */}
       {comment && (
