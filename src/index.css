@@ -46,6 +46,8 @@
     --menu-card: 60 20% 98%;
     --menu-border: 70 18% 86%;
     --menu-tag: 80 22% 91%;
+    --menu-savings: 27 56% 52%;
+    --menu-course-label: 25 10% 16%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -87,6 +89,8 @@
     --menu-card: 70 8% 14%;
     --menu-border: 70 8% 22%;
     --menu-tag: 70 8% 20%;
+    --menu-savings: 27 56% 52%;
+    --menu-course-label: 25 10% 75%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;

@@ -63,6 +63,8 @@ export default {
           card: "hsl(var(--menu-card))",
           border: "hsl(var(--menu-border))",
           tag: "hsl(var(--menu-tag))",
+          savings: "hsl(var(--menu-savings))",
+          "course-label": "hsl(var(--menu-course-label))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",

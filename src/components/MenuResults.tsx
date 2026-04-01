@@ -112,8 +112,8 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
           transition={{ delay: 0.15 }}
           className="flex items-center justify-center gap-2 bg-secondary/10 border border-secondary/20 rounded-xl px-4 py-2.5"
         >
-          <Wallet className="w-4 h-4 text-secondary" />
-          <span className="text-sm font-semibold text-secondary">
+          <Wallet className="w-4 h-4 text-menu-savings" />
+          <span className="text-sm font-semibold text-menu-savings">
             You saved ~${menu.totalPantrySavings} overall using your pantry
           </span>
         </motion.div>
@@ -139,7 +139,7 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
               >
                 {/* Header */}
                 <div className="px-5 pt-5 pb-0">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-menu-accent">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-menu-course-label">
                     {courseLabels[course.type] || course.type}
                   </span>
                   <h3 className="font-display font-bold text-foreground text-lg leading-tight mt-1.5">{course.name}</h3>
@@ -179,8 +179,8 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
 
                 {/* Value signal footer */}
                 <div className="mt-auto border-t border-menu-border px-5 py-3 flex items-center gap-1.5">
-                  <Wallet className="w-3.5 h-3.5 text-secondary" />
-                  <span className="text-xs font-semibold text-secondary">
+                  <Wallet className="w-3.5 h-3.5 text-menu-savings" />
+                  <span className="text-xs font-semibold text-menu-savings">
                     {course.pantrySavings != null && course.pantrySavings > 0
                       ? `Saved ~$${course.pantrySavings} using your pantry`
                       : course.estimatedCost != null
