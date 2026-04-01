@@ -29,7 +29,8 @@ serve(async (req) => {
 
         const resp = await fetch(url);
         if (!resp.ok) {
-          console.error(`YouTube search failed for "${dish}":`, resp.status);
+          const errBody = await resp.text();
+          console.error(`YouTube search failed for "${dish}": ${resp.status}`, errBody);
           return null;
         }
 
