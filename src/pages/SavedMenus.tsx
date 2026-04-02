@@ -57,9 +57,9 @@ const SavedMenus = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-transparent flex flex-col">
       {/* Header */}
-      <header className="flex items-center justify-between px-4 py-3 border-b border-border bg-card">
+      <header className="flex items-center justify-between px-4 py-3 border-b border-border bg-background/85 backdrop-blur-sm">
         <button onClick={() => navigate("/new")} className="flex items-center gap-2.5">
           <PokoAvatar size="md" animate={false} />
           <span className="font-display font-bold text-foreground text-lg">Poko</span>
