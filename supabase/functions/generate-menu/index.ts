@@ -44,17 +44,31 @@ const RULES = `Rules:
 - Limit to 3-4 dishes max
 - ALL dishes must fit within the given time limit — no dish's start_time_minutes can exceed it
 - start_time_minutes = minutes before serving (e.g. 90 for "1 hour 30 min before")
-- savings = estimated dollar amount saved by using pantry ingredients (0 if none)
 - Adapt complexity based on cooking skill:
   - Beginner: simple dishes, low effort
   - Intermediate: moderate complexity
   - Advanced: creative, multi-step elements
-- Always include 2-4 actions in the "actions" array
-- Add "buy" actions if there are missing_ingredients across any dish
-- Add "prep" actions for dishes that need early preparation (e.g. marinating, soaking)
-- Add "cook" actions only if they provide meaningful non-obvious timing info
-- Add a "serve" action if plating or assembly timing matters
-- Keep action labels concise and useful
+
+Savings rules:
+- savings = estimated dollar amount saved per dish by using pantry ingredients
+- If a dish uses ANY pantry ingredients, savings MUST be > 0 (estimate directionally, e.g. chicken=$3, rice=$1, tomatoes=$2, yogurt=$1)
+- total_savings = sum of all dish savings, must reflect actual pantry usage across dishes
+- Never return savings: 0 if pantry ingredients are used in a dish
+
+Action rules:
+- Always include 3-5 actions in the "actions" array
+- Buy actions: Do NOT bundle all missing ingredients into one long label. Either create separate buy actions per dish OR group them into short, meaningful labels (e.g. "Buy spices & herbs", "Buy fresh produce for salad")
+- Prep actions: Add for dishes needing early preparation. Label concisely (e.g. "Prep skillet ingredients", "Dice vegetables")
+- Cook actions: Add only if meaningful and non-obvious (e.g. "Start chicken & rice skillet")
+- Serve action: ALWAYS include exactly one final action with type "serve", a short label (e.g. "Plate and serve"), when "Serve time", and minutes_before_serving 0
+- All action labels must be short, practical, and user-friendly — no long instructional sentences
+- Good examples: "Buy lemons & parsley", "Prep skillet ingredients", "Make yogurt dip", "Plate and serve"
+- Bad examples: "Purchase all necessary ingredients including onion, garlic, and chicken broth from the store"
+
+Timing rules:
+- Prep actions must have higher minutes_before_serving than cook actions
+- Cook actions must align with dish start_time_minutes
+- Actions must be ordered by minutes_before_serving descending
 - Ensure action minutes_before_serving aligns with dish start_time_minutes`;
 
 const SYSTEM_INITIAL = `You are Poko, a calm dinner party planning assistant.
