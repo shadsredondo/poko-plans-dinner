@@ -66,6 +66,9 @@ export default {
           savings: "hsl(var(--menu-savings))",
           "course-label": "hsl(var(--menu-course-label))",
         },
+        mic: {
+          teal: "hsl(var(--mic-teal))",
+          "teal-foreground": "hsl(var(--mic-teal-foreground))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -99,10 +102,15 @@ export default {
             height: "0",
           },
         },
+        "mic-pulse": {
+          "0%": { transform: "scale(1)", opacity: "0.4" },
+          "100%": { transform: "scale(1.8)", opacity: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "mic-pulse": "mic-pulse 2s ease-out infinite",
       },
     },
   },

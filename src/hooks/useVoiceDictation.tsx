@@ -5,13 +5,23 @@ const SpeechRecognition =
     ? (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
     : null;
 
+export type VoiceState = "idle" | "listening" | "processing" | "error";
+
 export const useVoiceDictation = (onResult: (text: string) => void) => {
-  const [isListening, setIsListening] = useState(false);
+  const [state, setState] = useState<VoiceState>("idle");
   const [isSupported] = useState(() => !!SpeechRecognition);
   const recognitionRef = useRef<any>(null);
+  const processingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearProcessingTimer = () => {
+    if (processingTimerRef.current) {
+      clearTimeout(processingTimerRef.current);
+      processingTimerRef.current = null;
+    }
+  };
 
   const start = useCallback(() => {
-    if (!SpeechRecognition || isListening) return;
+    if (!SpeechRecognition || state === "listening") return;
 
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
@@ -26,29 +36,56 @@ export const useVoiceDictation = (onResult: (text: string) => void) => {
       onResult(transcript);
     };
 
-    recognition.onerror = () => {
-      setIsListening(false);
+    recognition.onerror = (event: any) => {
+      clearProcessingTimer();
+      if (event.error === "no-speech" || event.error === "audio-capture") {
+        setState("error");
+        setTimeout(() => setState("idle"), 3000);
+      } else {
+        setState("idle");
+      }
     };
 
     recognition.onend = () => {
-      setIsListening(false);
+      // Brief processing state before returning to idle
+      setState("processing");
+      processingTimerRef.current = setTimeout(() => {
+        setState("idle");
+      }, 800);
     };
 
     recognitionRef.current = recognition;
     recognition.start();
-    setIsListening(true);
-  }, [isListening, onResult]);
+    setState("listening");
+  }, [state, onResult]);
 
   const stop = useCallback(() => {
-    recognitionRef.current?.stop();
-    setIsListening(false);
+    if (recognitionRef.current) {
+      setState("processing");
+      recognitionRef.current.stop();
+      processingTimerRef.current = setTimeout(() => {
+        setState("idle");
+      }, 800);
+    }
   }, []);
+
+  const toggle = useCallback(() => {
+    if (state === "listening") {
+      stop();
+    } else if (state === "idle" || state === "error") {
+      start();
+    }
+  }, [state, start, stop]);
 
   useEffect(() => {
     return () => {
+      clearProcessingTimer();
       recognitionRef.current?.stop();
     };
   }, []);
 
-  return { isListening, isSupported, start, stop, toggle: isListening ? stop : start };
+  // Backward compat
+  const isListening = state === "listening";
+
+  return { state, isListening, isSupported, start, stop, toggle };
 };
