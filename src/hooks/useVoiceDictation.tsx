@@ -47,13 +47,11 @@ export const useVoiceDictation = (onResult: (text: string) => void) => {
     };
 
     recognition.onend = () => {
-      if (state === "listening") {
-        // Brief processing state before returning to idle
-        setState("processing");
-        processingTimerRef.current = setTimeout(() => {
-          setState("idle");
-        }, 800);
-      }
+      // Brief processing state before returning to idle
+      setState("processing");
+      processingTimerRef.current = setTimeout(() => {
+        setState("idle");
+      }, 800);
     };
 
     recognitionRef.current = recognition;
