@@ -113,11 +113,6 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Nunito', sans-serif;
-    background-image: url('/images/food-bg.png');
-    background-repeat: no-repeat;
-    background-position: center calc(100% - 1.5rem);
-    background-size: min(1100px, 92vw) auto;
-    background-attachment: fixed;
   }
 
   h1, h2, h3, h4, h5, h6 {
