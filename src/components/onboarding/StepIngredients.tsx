@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { X, Mic, MicOff } from "lucide-react";
+import { X, Mic, Loader2 } from "lucide-react";
 import { useVoiceDictation } from "@/hooks/useVoiceDictation";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Props {
   value: string[];
@@ -10,7 +11,7 @@ interface Props {
 const StepIngredients = ({ value, onChange }: Props) => {
   const [input, setInput] = useState("");
 
-  const { isListening, isSupported, toggle } = useVoiceDictation((text) => {
+  const { state, isSupported, toggle } = useVoiceDictation((text) => {
     setInput(text);
   });
 
@@ -32,6 +33,20 @@ const StepIngredients = ({ value, onChange }: Props) => {
       e.preventDefault();
       addIngredient();
     }
+  };
+
+  const helperText = {
+    idle: null,
+    listening: "Speak now…",
+    processing: "Processing…",
+    error: "Couldn't hear you. Try again.",
+  };
+
+  const helperColor = {
+    idle: "",
+    listening: "text-[hsl(var(--mic-teal))]",
+    processing: "text-muted-foreground",
+    error: "text-destructive",
   };
 
   return (
@@ -57,17 +72,31 @@ const StepIngredients = ({ value, onChange }: Props) => {
           {isSupported && (
             <button
               onClick={toggle}
-              className={`relative flex items-center justify-center w-11 h-11 rounded-full transition-all ${
-                isListening
-                  ? "bg-destructive text-destructive-foreground shadow-lg"
+              disabled={state === "processing"}
+              className={`relative flex items-center justify-center w-11 h-11 rounded-full transition-all duration-300 ${
+                state === "listening"
+                  ? "bg-[hsl(var(--mic-teal))] text-[hsl(var(--mic-teal-foreground))] shadow-md"
+                  : state === "processing"
+                  ? "bg-muted text-muted-foreground cursor-wait"
+                  : state === "error"
+                  ? "bg-muted text-destructive"
                   : "bg-muted text-muted-foreground hover:bg-muted/80"
               }`}
-              title={isListening ? "Stop listening" : "Dictate ingredients"}
+              title={state === "idle" ? "Tap to speak" : state === "listening" ? "Tap to stop" : ""}
             >
-              {isListening && (
-                <span className="absolute inset-0 rounded-full bg-destructive/30 animate-ping" />
+              {/* Teal pulse rings for listening */}
+              {state === "listening" && (
+                <>
+                  <span className="absolute inset-0 rounded-full bg-[hsl(var(--mic-teal))]/20 animate-[mic-pulse_2s_ease-out_infinite]" />
+                  <span className="absolute inset-[-4px] rounded-full bg-[hsl(var(--mic-teal))]/10 animate-[mic-pulse_2s_ease-out_0.4s_infinite]" />
+                </>
               )}
-              {isListening ? <MicOff className="w-4 h-4 relative z-10" /> : <Mic className="w-4 h-4" />}
+
+              {state === "processing" ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Mic className="w-4 h-4 relative z-10" />
+              )}
             </button>
           )}
           <button
@@ -79,11 +108,20 @@ const StepIngredients = ({ value, onChange }: Props) => {
           </button>
         </div>
 
-        {isListening && (
-          <p className="text-xs text-destructive font-medium animate-pulse">
-            Listening… speak your ingredients
-          </p>
-        )}
+        <AnimatePresence mode="wait">
+          {helperText[state] && (
+            <motion.p
+              key={state}
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.2 }}
+              className={`text-xs font-medium ${helperColor[state]}`}
+            >
+              {helperText[state]}
+            </motion.p>
+          )}
+        </AnimatePresence>
 
         {value.length > 0 && (
           <div className="flex flex-wrap gap-2">
