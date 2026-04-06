@@ -44,7 +44,7 @@ const StepIngredients = ({ value, onChange }: Props) => {
 
   const helperColor = {
     idle: "",
-    listening: "text-[hsl(var(--mic-teal))]",
+    listening: "text-mic-teal",
     processing: "text-muted-foreground",
     error: "text-destructive",
   };
