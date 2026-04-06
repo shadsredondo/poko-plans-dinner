@@ -10,7 +10,7 @@ const SCHEMA = `{
     {
       "dish": "string",
       "category": "starter | main | side | dessert",
-      "importance": "anchor | supporting | optional",
+      "importance": "anchor | supporting",
       "priority": number,
       "start_time": "string (e.g. 1 hour before)",
       "start_time_minutes": number,
@@ -22,7 +22,16 @@ const SCHEMA = `{
       "reason": "short phrase (max 3-5 words)"
     }
   ],
-  "total_savings": number
+  "total_savings": number,
+  "actions": [
+    {
+      "type": "buy | prep | cook | serve",
+      "label": "short, clear action (e.g. 'Buy lemons and parsley')",
+      "when": "human readable (e.g. '1 hour before')",
+      "minutes_before_serving": number or null,
+      "related_dish": "dish name or null"
+    }
+  ]
 }`;
 
 const RULES = `Rules:
