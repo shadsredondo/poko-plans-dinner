@@ -138,8 +138,8 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
         </div>
       )}
 
-      {/* Dish Cards — one card per dish with all info consolidated */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* Timeline Cards */}
+      <div className="space-y-0">
         {menu.courses.map((course, i) => {
           const ingredients = course.keyIngredients.map(normalizeIngredient);
           const video = getVideoForDish(course.name);
@@ -156,6 +156,7 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
               video={video}
               prepStep={prepStep}
               index={i}
+              isLast={i === menu.courses.length - 1}
             />
           );
         })}
