@@ -48,7 +48,14 @@ const RULES = `Rules:
 - Adapt complexity based on cooking skill:
   - Beginner: simple dishes, low effort
   - Intermediate: moderate complexity
-  - Advanced: creative, multi-step elements`;
+  - Advanced: creative, multi-step elements
+- Always include 2-4 actions in the "actions" array
+- Add "buy" actions if there are missing_ingredients across any dish
+- Add "prep" actions for dishes that need early preparation (e.g. marinating, soaking)
+- Add "cook" actions only if they provide meaningful non-obvious timing info
+- Add a "serve" action if plating or assembly timing matters
+- Keep action labels concise and useful
+- Ensure action minutes_before_serving aligns with dish start_time_minutes`;
 
 const SYSTEM_INITIAL = `You are Poko, a calm dinner party planning assistant.
 
