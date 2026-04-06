@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, ChevronDown, ChevronUp } from "lucide-react";
+import { Play, ChevronDown, ChevronUp, ShoppingCart } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -8,15 +8,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-interface Ingredient {
-  name: string;
-  fromPantry: boolean;
-  estimatedCost?: number;
-}
-
-interface PlanItem {
-  time: string;
-  task: string;
+interface MenuDish {
+  dish: string;
+  category: string;
+  start_time: string;
+  priority: number;
+  ingredients_used: string[];
+  missing_ingredients: string[];
+  savings: number;
+  reason: string;
 }
 
 interface Video {
@@ -27,50 +27,25 @@ interface Video {
 }
 
 interface DishCardProps {
-  courseType: string;
-  name: string;
-  ingredients: Ingredient[];
-  estimatedCost?: number;
-  pantrySavings?: number;
+  dish: MenuDish;
   video?: Video;
-  prepStep?: PlanItem;
   index: number;
   isLast?: boolean;
 }
 
-const courseLabels: Record<string, string> = {
+const categoryLabels: Record<string, string> = {
   starter: "Starter",
   main: "Main",
   side: "Side",
   dessert: "Dessert",
 };
 
-const DishCard = ({
-  courseType,
-  name,
-  ingredients,
-  estimatedCost,
-  pantrySavings,
-  video,
-  prepStep,
-  index,
-  isLast = false,
-}: DishCardProps) => {
+const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
   const [expanded, setExpanded] = useState(false);
   const [videoOpen, setVideoOpen] = useState(false);
 
-  const timeBadge = prepStep?.time || (
-    courseType === "starter" ? "1 hr before" :
-    courseType === "main" ? "45 min before" :
-    courseType === "side" ? "30 min before" :
-    courseType === "dessert" ? "Day before" : ""
-  );
-
-  const pantryItems = ingredients.filter((ing) => ing.fromPantry);
-  const buyItems = ingredients.filter((ing) => !ing.fromPantry);
-  const allChips = [...pantryItems, ...buyItems];
-  const visibleChips = allChips.slice(0, 3);
-  const hiddenCount = allChips.length - 3;
+  const visibleIngredients = dish.ingredients_used.slice(0, 3);
+  const hiddenCount = dish.ingredients_used.length - 3;
 
   return (
     <div className="relative">
@@ -94,7 +69,7 @@ const DishCard = ({
         <div className="flex-1 min-w-0">
           {/* Time badge */}
           <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-secondary mb-1.5 block">
-            {timeBadge}
+            {dish.start_time}
           </span>
 
           <motion.button
@@ -105,27 +80,21 @@ const DishCard = ({
             {/* Main row */}
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3 min-w-0 flex-1">
-                {/* Course pill */}
                 <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground/60 bg-muted/40 rounded-full px-2 py-0.5 shrink-0">
-                  {courseLabels[courseType] || courseType}
+                  {categoryLabels[dish.category] || dish.category}
                 </span>
-                {/* Dish name */}
                 <h3 className="font-display font-bold text-foreground text-[15px] leading-snug truncate">
-                  {name}
+                  {dish.dish}
                 </h3>
               </div>
 
-              {/* Right side: savings + video + expand */}
+              {/* Right side */}
               <div className="flex items-center gap-2 shrink-0">
-                {pantrySavings != null && pantrySavings > 0 ? (
+                {dish.savings > 0 && (
                   <span className="text-[11px] font-semibold text-menu-savings whitespace-nowrap">
-                    Saved ${pantrySavings}
+                    Saved ${dish.savings}
                   </span>
-                ) : estimatedCost != null ? (
-                  <span className="text-[11px] text-muted-foreground whitespace-nowrap">
-                    ~${estimatedCost}
-                  </span>
-                ) : null}
+                )}
 
                 {video && (
                   <button
@@ -146,18 +115,14 @@ const DishCard = ({
               </div>
             </div>
 
-            {/* Ingredient chips row */}
+            {/* Ingredient chips */}
             <div className="flex items-center gap-1.5 mt-2">
-              {visibleChips.map((ing, j) => (
+              {visibleIngredients.map((ing, j) => (
                 <span
                   key={j}
-                  className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
-                    ing.fromPantry
-                      ? "bg-secondary/10 text-secondary border border-secondary/20"
-                      : "bg-muted/60 text-muted-foreground"
-                  }`}
+                  className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary/10 text-secondary border border-secondary/20"
                 >
-                  {ing.name}
+                  {ing}
                 </span>
               ))}
               {hiddenCount > 0 && (
@@ -179,38 +144,49 @@ const DishCard = ({
                 className="overflow-hidden"
               >
                 <div className="bg-menu-card border border-menu-border/50 border-t-0 rounded-b-xl px-4 py-3 -mt-1 space-y-3">
-                  {/* Prep task */}
-                  {prepStep && (
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      <span className="font-semibold text-foreground">{prepStep.time}</span>
-                      {" — "}
-                      {prepStep.task}
-                    </p>
-                  )}
+                  {/* Reason */}
+                  <p className="text-xs text-muted-foreground leading-relaxed italic">
+                    {dish.reason}
+                  </p>
 
-                  {/* All ingredients */}
+                  {/* Pantry ingredients */}
                   <div>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 block mb-1.5">
-                      Ingredients
+                      From your pantry
                     </span>
                     <div className="flex flex-wrap gap-1.5">
-                      {ingredients.map((ing, j) => (
+                      {dish.ingredients_used.map((ing, j) => (
                         <span
                           key={j}
-                          className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
-                            ing.fromPantry
-                              ? "bg-secondary/10 text-secondary border border-secondary/20"
-                              : "bg-muted/60 text-muted-foreground"
-                          }`}
+                          className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary/10 text-secondary border border-secondary/20"
                         >
-                          {ing.name}
-                          {ing.fromPantry && " ✓"}
+                          {ing} ✓
                         </span>
                       ))}
                     </div>
                   </div>
 
-                  {/* Video embed prompt */}
+                  {/* Missing ingredients */}
+                  {dish.missing_ingredients.length > 0 && (
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 block mb-1.5 flex items-center gap-1">
+                        <ShoppingCart className="w-3 h-3" />
+                        Need to buy
+                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {dish.missing_ingredients.map((ing, j) => (
+                          <span
+                            key={j}
+                            className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted/60 text-muted-foreground"
+                          >
+                            {ing}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Video */}
                   {video && (
                     <button
                       onClick={() => setVideoOpen(true)}
@@ -227,7 +203,6 @@ const DishCard = ({
         </div>
       </motion.div>
 
-      {/* Spacer between cards */}
       {!isLast && <div className="h-3" />}
 
       {/* Video Modal */}
@@ -235,7 +210,7 @@ const DishCard = ({
         <Dialog open={videoOpen} onOpenChange={setVideoOpen}>
           <DialogContent className="sm:max-w-2xl p-0 overflow-hidden">
             <DialogHeader className="px-5 pt-5 pb-2">
-              <DialogTitle className="text-base font-semibold truncate">{name}</DialogTitle>
+              <DialogTitle className="text-base font-semibold truncate">{dish.dish}</DialogTitle>
             </DialogHeader>
             <div className="aspect-video w-full">
               <iframe

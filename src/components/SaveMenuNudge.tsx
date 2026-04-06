@@ -36,16 +36,20 @@ const SaveMenuNudge = ({ menu, guests, ingredients, effort, skill, cuisine }: Sa
   const buildPayload = (menuData?: any) => {
     const m = menuData || menu;
     if (!m) return null;
+    // Derive title from first dish or fallback
+    const title = m.menu?.[0]?.dish
+      ? `${m.menu[0].dish} & more`
+      : m.menuTitle || "Untitled Menu";
     return {
-      menu_title: m.menuTitle || "Untitled Menu",
+      menu_title: m.menu_title || title,
       menu_data: m,
       guests: menuData?.guests ?? guests,
       ingredients: menuData?.ingredients ?? ingredients,
       effort: menuData?.effort ?? effort,
       skill: menuData?.skill ?? skill,
       cuisine: menuData?.cuisine ?? cuisine,
-      total_estimated_cost: m.totalEstimatedCost,
-      total_pantry_savings: m.totalPantrySavings,
+      total_estimated_cost: null,
+      total_pantry_savings: m.summary?.total_savings ?? m.totalPantrySavings ?? null,
     };
   };
 

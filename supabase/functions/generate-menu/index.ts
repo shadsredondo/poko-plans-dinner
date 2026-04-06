@@ -20,52 +20,46 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
-    const systemPrompt = `You are Poko, a calm, helpful dinner party planning assistant. Your tone is warm but minimal — no long commentary, no playful menu names, no poetic descriptions.
+    const systemPrompt = `You are Poko, a calm, helpful dinner party planning assistant. Your tone is warm but minimal.
 
-Your job: Given ingredients, number of guests, effort level, cooking skill, and an optional cuisine preference, create a clean 3-4 course dinner party menu.
+Your job: Given ingredients, number of guests, effort level, cooking skill, and an optional cuisine preference, create a clear cooking timeline of 3-4 dishes.
 
-Rules:
-- PRIORITIZE using the ingredients they already have
-- Menu title: simple and descriptive (e.g. "Balanced Asian-Inspired Dinner", "Simple Vegetarian Hosting Menu"). No playful or exaggerated names.
-- Dish descriptions: one short, functional line max. Practical and easy to understand. Not poetic.
-- Ingredient tags: minimal, only key ingredients from the user's pantry
-- Shopping list: only missing ingredients, max 5-6 items. No commentary.
-- Plan: use friendly, simple language with relative time labels
-- pokoComment: one short optional line only (e.g. "This should come together smoothly."). No long commentary.
-- Adapt the menu complexity based on cooking skill:
-  - Beginner: very simple dishes, minimal steps, minimal techniques. Fewer dishes, fewer ingredients, shorter cooking time. Never suggest complex techniques.
-  - Intermediate: moderate complexity, some cooking steps, standard techniques
-  - Advanced: more creative, multi-step, restaurant-style elements welcome
+You must NOT return free text. Return structured JSON in this exact format:
 
-You MUST respond with valid JSON in exactly this format:
 {
-  "menuTitle": "Simple, descriptive menu name",
-  "courses": [
+  "menu": [
     {
-      "type": "starter" | "main" | "side" | "dessert",
-      "name": "Dish name",
-      "description": "One short functional description",
-      "keyIngredients": [
-        { "name": "ingredient1", "fromPantry": true, "estimatedCost": 0 },
-        { "name": "ingredient2", "fromPantry": false, "estimatedCost": 2.5 }
-      ],
-      "estimatedCost": 8,
-      "pantrySavings": 5
+      "dish": "Dish name",
+      "category": "starter" | "main" | "side" | "dessert",
+      "start_time": "e.g. '1 hour before'",
+      "priority": 1,
+      "ingredients_used": ["ingredient1", "ingredient2"],
+      "missing_ingredients": ["ingredient3"],
+      "savings": 5,
+      "reason": "short explanation of why this dish is placed here"
     }
   ],
-  "shoppingList": ["item1", "item2"],
-  "totalEstimatedCost": 30,
-  "totalPantrySavings": 15,
-  "plan": [
-    { "time": "2 hours before", "task": "What to do" },
-    { "time": "45 mins before", "task": "What to do" },
-    { "time": "15 mins before", "task": "What to do" },
-    { "time": "Serve", "task": "Plate up and enjoy!" }
-  ],
-   "pokoComment": "One short, optional line"
- }
- 
- IMPORTANT: You MUST always include estimatedCost and pantrySavings for every course, and totalEstimatedCost and totalPantrySavings at the top level. Never omit these fields. If no savings apply, use 0.`;
+  "summary": {
+    "total_savings": 15,
+    "optimization_note": "short sentence explaining how this reduces effort"
+  }
+}
+
+Rules:
+- Prioritize dishes that take longer first (highest priority = 1)
+- Avoid overlapping complex steps
+- Prefer pantry ingredients from what the user listed
+- Keep the plan simple and realistic for the selected effort level
+- Limit to 3-4 dishes max
+- start_time must be relative (e.g. "2 hours before", "45 min before", "15 min before", "Just before serving")
+- savings = estimated dollar amount saved by using pantry ingredients for this dish (use 0 if none)
+- ingredients_used = ingredients from the user's list that this dish uses
+- missing_ingredients = items they need to buy
+- reason = one short sentence explaining the timeline placement
+- Adapt complexity based on cooking skill:
+  - Beginner: very simple dishes, minimal steps
+  - Intermediate: moderate complexity
+  - Advanced: more creative, multi-step elements welcome`;
 
     const userPrompt = `Here's what we're working with:
 - Guests: ${guests} people
@@ -74,7 +68,7 @@ You MUST respond with valid JSON in exactly this format:
 - Cooking skill: ${skill || "intermediate"}
 - Cuisine vibe: ${cuisine || "Surprise me!"}
 
-Create an amazing dinner party menu!`;
+Create the cooking timeline!`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -117,19 +111,15 @@ Create an amazing dinner party menu!`;
       throw new Error("AI returned empty response");
     }
 
-    // Robust JSON extraction
     let parsed;
     try {
-      // Try direct parse first
       parsed = JSON.parse(content.trim());
     } catch {
       try {
-        // Try extracting from markdown code blocks
         const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
         if (jsonMatch) {
           parsed = JSON.parse(jsonMatch[1].trim());
         } else {
-          // Try finding JSON object boundaries
           const start = content.indexOf('{');
           const end = content.lastIndexOf('}');
           if (start !== -1 && end !== -1) {

@@ -1,40 +1,31 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Leaf, Wallet, Loader2 } from "lucide-react";
+import { Wallet, Loader2, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import DishCard from "./DishCard";
 
-interface Ingredient {
-  name: string;
-  fromPantry: boolean;
-  estimatedCost?: number;
+interface MenuDish {
+  dish: string;
+  category: string;
+  start_time: string;
+  priority: number;
+  ingredients_used: string[];
+  missing_ingredients: string[];
+  savings: number;
+  reason: string;
 }
 
-interface Course {
-  type: string;
-  name: string;
-  description: string;
-  keyIngredients: Ingredient[] | string[];
-  fromFridge?: boolean;
-  estimatedCost?: number;
-  pantrySavings?: number;
-}
-
-interface PlanItem {
-  time: string;
-  task: string;
+interface MenuSummary {
+  total_savings: number;
+  optimization_note: string;
 }
 
 interface MenuData {
-  menuTitle: string;
-  courses: Course[];
-  shoppingList: string[];
-  plan?: PlanItem[];
-  timeline?: PlanItem[];
-  pokoComment?: string;
-  pokoReaction?: string;
-  pokoTip?: string;
-  totalEstimatedCost?: number;
+  menu: MenuDish[];
+  summary: MenuSummary;
+  // Legacy compat
+  menuTitle?: string;
+  courses?: any[];
   totalPantrySavings?: number;
 }
 
@@ -46,39 +37,24 @@ interface Video {
   channelTitle: string;
 }
 
-function normalizeIngredient(ing: Ingredient | string): Ingredient {
-  if (typeof ing === "string") {
-    return { name: ing, fromPantry: false };
-  }
-  return ing;
-}
-
-/** Try to match a timeline step to a dish name */
-function findPrepStep(dishName: string, planItems: PlanItem[]): PlanItem | undefined {
-  const lower = dishName.toLowerCase();
-  const words = lower.split(/\s+/).filter((w) => w.length > 3);
-  return planItems.find((item) => {
-    const taskLower = item.task.toLowerCase();
-    return words.some((word) => taskLower.includes(word));
-  });
-}
-
 const MenuResults = ({ menu }: { menu: MenuData }) => {
-  const planItems = menu.plan || menu.timeline || [];
-  const comment = menu.pokoComment || menu.pokoTip || menu.pokoReaction;
+  const dishes = menu.menu || [];
+  const summary = menu.summary || { total_savings: 0, optimization_note: "" };
 
-  // Fetch recipe videos and distribute per dish
+  // Sort by priority (1 = first)
+  const sortedDishes = [...dishes].sort((a, b) => a.priority - b.priority);
+
   const [videos, setVideos] = useState<Video[]>([]);
   const [videosLoading, setVideosLoading] = useState(true);
 
   useEffect(() => {
-    const dishes = menu.courses.map((c) => c.name);
-    if (!dishes.length) return;
+    const dishNames = sortedDishes.map((d) => d.dish);
+    if (!dishNames.length) return;
 
     const fetchVideos = async () => {
       try {
         const { data, error } = await supabase.functions.invoke("search-recipe-videos", {
-          body: { dishes },
+          body: { dishes: dishNames },
         });
         if (error) throw error;
         setVideos(data?.videos || []);
@@ -90,7 +66,7 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
     };
 
     fetchVideos();
-  }, [menu.courses]);
+  }, [menu.menu]);
 
   function getVideoForDish(dishName: string): Video | undefined {
     const lower = dishName.toLowerCase();
@@ -99,33 +75,34 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
 
   return (
     <div className="space-y-5">
-      {/* Menu Title */}
+      {/* Header */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center py-3"
+        className="text-center py-2"
       >
-        <div className="inline-flex items-center gap-2 mb-1">
-          <div className="w-8 h-px bg-menu-accent/40" />
-          <Leaf className="w-4 h-4 text-menu-accent" />
-          <div className="w-8 h-px bg-menu-accent/40" />
-        </div>
-        <h2 className="font-display text-xl font-bold text-foreground tracking-tight">
-          {menu.menuTitle}
+        <h2 className="font-display text-lg font-bold text-foreground tracking-tight">
+          Your Cooking Timeline
         </h2>
+        {summary.optimization_note && (
+          <p className="text-xs text-muted-foreground mt-1 flex items-center justify-center gap-1.5">
+            <Sparkles className="w-3 h-3 text-secondary" />
+            {summary.optimization_note}
+          </p>
+        )}
       </motion.div>
 
-      {/* Overall Savings Banner */}
-      {menu.totalPantrySavings && menu.totalPantrySavings > 0 && (
+      {/* Savings Banner */}
+      {summary.total_savings > 0 && (
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.15 }}
+          transition={{ delay: 0.1 }}
           className="flex items-center justify-center gap-2 bg-secondary/10 border border-secondary/20 rounded-xl px-4 py-2.5"
         >
           <Wallet className="w-4 h-4 text-menu-savings" />
           <span className="text-sm font-semibold text-menu-savings">
-            You saved ~${menu.totalPantrySavings} overall using your pantry
+            Saved ~${summary.total_savings} using your pantry
           </span>
         </motion.div>
       )}
@@ -140,39 +117,19 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
 
       {/* Timeline Cards */}
       <div className="space-y-0">
-        {menu.courses.map((course, i) => {
-          const ingredients = course.keyIngredients.map(normalizeIngredient);
-          const video = getVideoForDish(course.name);
-          const prepStep = findPrepStep(course.name, planItems);
-
+        {sortedDishes.map((dish, i) => {
+          const video = getVideoForDish(dish.dish);
           return (
             <DishCard
               key={i}
-              courseType={course.type}
-              name={course.name}
-              ingredients={ingredients}
-              estimatedCost={course.estimatedCost}
-              pantrySavings={course.pantrySavings}
+              dish={dish}
               video={video}
-              prepStep={prepStep}
               index={i}
-              isLast={i === menu.courses.length - 1}
+              isLast={i === sortedDishes.length - 1}
             />
           );
         })}
       </div>
-
-      {/* Poko Comment */}
-      {comment && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="text-center px-4 pt-1"
-        >
-          <p className="text-sm text-muted-foreground">{comment}</p>
-        </motion.div>
-      )}
     </div>
   );
 };
