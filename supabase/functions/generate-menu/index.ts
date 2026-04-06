@@ -64,7 +64,8 @@ Rules:
 Ingredients: ${ingredients}
 Effort: ${effort || "medium"}
 Skill: ${skill || "intermediate"}
-Cuisine: ${cuisine || "Surprise me!"}`;
+Cuisine: ${cuisine || "Surprise me!"}
+Time limit: ${time_limit || "no limit"}`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
