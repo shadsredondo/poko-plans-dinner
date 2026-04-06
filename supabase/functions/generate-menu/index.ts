@@ -52,6 +52,7 @@ Rules:
 - Keep "reason" concise (no full sentences, max 3-5 words)
 - Prefer pantry ingredients from what the user listed
 - Limit to 3-4 dishes max
+- ALL dishes must fit within the given time limit — no dish's start_time_minutes can exceed it
 - start_time_minutes = minutes before serving (e.g. 90 for "1 hour 30 min before")
 - savings = estimated dollar amount saved by using pantry ingredients (0 if none)
 - Adapt complexity based on cooking skill:
