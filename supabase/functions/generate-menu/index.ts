@@ -9,7 +9,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { guests, ingredients, effort, skill, cuisine } = await req.json();
+    const { guests, ingredients, effort, skill, cuisine, time_limit } = await req.json();
     
     if (!ingredients || !guests) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
