@@ -69,6 +69,7 @@ export default {
         mic: {
           teal: "hsl(var(--mic-teal))",
           "teal-foreground": "hsl(var(--mic-teal-foreground))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
