@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Youtube, Clock, Play, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Play, ChevronDown, ChevronUp } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -35,6 +35,7 @@ interface DishCardProps {
   video?: Video;
   prepStep?: PlanItem;
   index: number;
+  isLast?: boolean;
 }
 
 const courseLabels: Record<string, string> = {
@@ -43,39 +44,6 @@ const courseLabels: Record<string, string> = {
   side: "Side",
   dessert: "Dessert",
 };
-
-const ingredientEmojis: Record<string, string> = {
-  chicken: "🍗", beef: "🥩", pork: "🥩", lamb: "🐑", fish: "🐟", salmon: "🍣",
-  shrimp: "🦐", prawn: "🦐", rice: "🍚", pasta: "🍝", noodles: "🍜",
-  bread: "🍞", egg: "🥚", eggs: "🥚", cheese: "🧀", butter: "🧈", milk: "🥛",
-  cream: "🍶", tomato: "🍅", tomatoes: "🍅", potato: "🥔", potatoes: "🥔",
-  onion: "🧅", garlic: "🧄", carrot: "🥕", broccoli: "🥦", corn: "🌽",
-  mushroom: "🍄", mushrooms: "🍄", pepper: "🫑", avocado: "🥑",
-  lemon: "🍋", lime: "🍋", orange: "🍊", apple: "🍎", banana: "🍌",
-  strawberry: "🍓", coconut: "🥥", chocolate: "🍫", honey: "🍯",
-  sugar: "🍬", salt: "🧂", olive: "🫒", oil: "🫒", tofu: "🧊",
-  lettuce: "🥬", spinach: "🥬", cucumber: "🥒", eggplant: "🍆",
-  peas: "🫛", beans: "🫘", chili: "🌶️", ginger: "🫚", herb: "🌿",
-  herbs: "🌿", basil: "🌿", cilantro: "🌿", mint: "🌿", wine: "🍷",
-  soy: "🥫", sauce: "🥫", vinegar: "🥫",
-  cinnamon: "🫚", nutmeg: "🫚", cumin: "🫚", paprika: "🌶️",
-  flour: "🌾", wheat: "🌾", oat: "🌾", barley: "🌾",
-  peanut: "🥜", almond: "🥜", walnut: "🥜", cashew: "🥜", nut: "🥜",
-  peach: "🍑", mango: "🥭", pineapple: "🍍", grape: "🍇", cherry: "🍒",
-  melon: "🍈", pear: "🍐", kiwi: "🥝",
-  bacon: "🥓", ham: "🥓", turkey: "🦃", duck: "🦆",
-  crab: "🦀", lobster: "🦞", squid: "🦑", oyster: "🦪",
-  yogurt: "🥛", pie: "🥧", cake: "🎂", cookie: "🍪",
-  coffee: "☕", tea: "🍵",
-};
-
-function getIngredientEmoji(ingredient: string): string {
-  const lower = ingredient.toLowerCase();
-  for (const [key, emoji] of Object.entries(ingredientEmojis)) {
-    if (lower.includes(key)) return emoji;
-  }
-  return "🍽️";
-}
 
 const DishCard = ({
   courseType,
@@ -86,131 +54,181 @@ const DishCard = ({
   video,
   prepStep,
   index,
+  isLast = false,
 }: DishCardProps) => {
-  const [hovered, setHovered] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [videoOpen, setVideoOpen] = useState(false);
 
-  const pantryItems = ingredients.filter((ing) => ing.fromPantry).slice(0, 4);
-  const buyItems = ingredients.filter((ing) => !ing.fromPantry).slice(0, 3);
-  const pantryCount = pantryItems.length;
+  const timeBadge = prepStep?.time || (
+    courseType === "starter" ? "1 hr before" :
+    courseType === "main" ? "45 min before" :
+    courseType === "side" ? "30 min before" :
+    courseType === "dessert" ? "Day before" : ""
+  );
 
-  const contextLine =
-    pantryCount >= 3
-      ? "Mostly pantry-friendly"
-      : pantryCount >= 1
-        ? `Great use of your ${pantryItems[0]?.name?.toLowerCase() || "pantry"}`
-        : estimatedCost != null && estimatedCost <= 5
-          ? "Low effort, high impact"
-          : "A crowd-pleaser";
+  const pantryItems = ingredients.filter((ing) => ing.fromPantry);
+  const buyItems = ingredients.filter((ing) => !ing.fromPantry);
+  const allChips = [...pantryItems, ...buyItems];
+  const visibleChips = allChips.slice(0, 3);
+  const hiddenCount = allChips.length - 3;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.1 + index * 0.12 }}
-      whileHover={{ scale: 1.015, y: -3 }}
-      onHoverStart={() => setHovered(true)}
-      onHoverEnd={() => setHovered(false)}
-      className="bg-menu-card rounded-2xl border border-menu-border overflow-hidden flex flex-col shadow-sm hover:shadow-md transition-shadow duration-300 cursor-default"
-    >
-      {/* Header: course label + dish name */}
-      <div className="px-5 pt-5 pb-1">
-        <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-menu-course-label/60">
-          {courseLabels[courseType] || courseType}
-        </span>
-        <h3 className="font-display font-bold text-foreground text-lg leading-tight mt-1 truncate">
-          {name}
-        </h3>
-      </div>
+    <div className="relative">
+      {/* Timeline connector */}
+      {!isLast && (
+        <div className="absolute left-[19px] top-[44px] bottom-[-12px] w-px bg-gradient-to-b from-secondary/40 to-secondary/10 z-0" />
+      )}
 
-      {/* Emoji ingredient row */}
-      <div className="flex items-center gap-2.5 px-5 py-2.5">
-        {ingredients.slice(0, 5).map((ing, j) => (
-          <motion.span
-            key={j}
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{
-              delay: 0.2 + index * 0.08 + j * 0.05,
-              type: "spring",
-              stiffness: 300,
-            }}
-            className="text-2xl"
-            title={ing.name}
-          >
-            {getIngredientEmoji(ing.name)}
-          </motion.span>
-        ))}
-      </div>
+      <motion.div
+        initial={{ opacity: 0, x: -16 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.08 + index * 0.1, ease: "easeOut" }}
+        className="relative z-10 flex gap-4"
+      >
+        {/* Timeline dot */}
+        <div className="flex flex-col items-center pt-1 shrink-0">
+          <div className="w-[10px] h-[10px] rounded-full bg-secondary border-2 border-secondary/60 shadow-sm" />
+        </div>
 
-      {/* Ingredient tags */}
-      <div className="px-5 pb-2 space-y-1.5">
-        {pantryItems.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {pantryItems.map((ing, j) => (
-              <span
-                key={`p-${j}`}
-                className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-secondary/15 text-secondary border border-secondary/25"
-              >
-                {ing.name}
-              </span>
-            ))}
-          </div>
-        )}
-        {buyItems.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {buyItems.map((ing, j) => (
-              <span
-                key={`b-${j}`}
-                className="text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-menu-tag text-muted-foreground"
-              >
-                {ing.name}
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Context line */}
-      <div className="px-5 pb-2">
-        <p className="text-xs text-muted-foreground italic">{contextLine}</p>
-      </div>
-
-      {/* Prep step (if available) */}
-      {prepStep && (
-        <div className="px-5 pb-2 flex items-center gap-1.5">
-          <Clock className="w-3 h-3 text-menu-accent" />
-          <span className="text-[11px] text-muted-foreground">
-            <span className="font-semibold text-menu-accent-foreground">{prepStep.time}</span>
-            {" · "}
-            {prepStep.task}
+        {/* Card */}
+        <div className="flex-1 min-w-0">
+          {/* Time badge */}
+          <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-secondary mb-1.5 block">
+            {timeBadge}
           </span>
-        </div>
-      )}
 
-      {/* Video CTA — always visible, lightweight */}
-      {video && (
-        <div className="px-5 pb-2">
-          <button
-            onClick={() => setVideoOpen(true)}
-            className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+          <motion.button
+            onClick={() => setExpanded(!expanded)}
+            whileTap={{ scale: 0.995 }}
+            className="w-full text-left bg-menu-card rounded-xl px-4 py-3 shadow-sm hover:shadow-md transition-shadow duration-200 border border-menu-border/50 group cursor-pointer"
           >
-            <Play className="w-3 h-3" />
-            ▶ Watch how to make this
-          </button>
-        </div>
-      )}
+            {/* Main row */}
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                {/* Course pill */}
+                <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground/60 bg-muted/40 rounded-full px-2 py-0.5 shrink-0">
+                  {courseLabels[courseType] || courseType}
+                </span>
+                {/* Dish name */}
+                <h3 className="font-display font-bold text-foreground text-[15px] leading-snug truncate">
+                  {name}
+                </h3>
+              </div>
 
-      {/* Savings footer */}
-      <div className="mt-auto border-t border-menu-border px-5 py-2.5 flex items-center">
-        <span className="text-xs font-semibold text-menu-savings">
-          {pantrySavings != null && pantrySavings > 0
-            ? `💸 Saved ~$${pantrySavings} using your pantry`
-            : estimatedCost != null
-              ? `~$${estimatedCost}`
-              : ""}
-        </span>
-      </div>
+              {/* Right side: savings + video + expand */}
+              <div className="flex items-center gap-2 shrink-0">
+                {pantrySavings != null && pantrySavings > 0 ? (
+                  <span className="text-[11px] font-semibold text-menu-savings whitespace-nowrap">
+                    Saved ${pantrySavings}
+                  </span>
+                ) : estimatedCost != null ? (
+                  <span className="text-[11px] text-muted-foreground whitespace-nowrap">
+                    ~${estimatedCost}
+                  </span>
+                ) : null}
+
+                {video && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setVideoOpen(true);
+                    }}
+                    className="w-7 h-7 rounded-full bg-secondary/10 hover:bg-secondary/20 flex items-center justify-center transition-colors"
+                    title="Watch recipe video"
+                  >
+                    <Play className="w-3 h-3 text-secondary" />
+                  </button>
+                )}
+
+                <div className="w-5 h-5 flex items-center justify-center text-muted-foreground/50 group-hover:text-muted-foreground transition-colors">
+                  {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                </div>
+              </div>
+            </div>
+
+            {/* Ingredient chips row */}
+            <div className="flex items-center gap-1.5 mt-2">
+              {visibleChips.map((ing, j) => (
+                <span
+                  key={j}
+                  className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
+                    ing.fromPantry
+                      ? "bg-secondary/10 text-secondary border border-secondary/20"
+                      : "bg-muted/60 text-muted-foreground"
+                  }`}
+                >
+                  {ing.name}
+                </span>
+              ))}
+              {hiddenCount > 0 && (
+                <span className="text-[10px] text-muted-foreground/60 font-medium">
+                  +{hiddenCount} more
+                </span>
+              )}
+            </div>
+          </motion.button>
+
+          {/* Expanded content */}
+          <AnimatePresence>
+            {expanded && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2, ease: "easeInOut" }}
+                className="overflow-hidden"
+              >
+                <div className="bg-menu-card border border-menu-border/50 border-t-0 rounded-b-xl px-4 py-3 -mt-1 space-y-3">
+                  {/* Prep task */}
+                  {prepStep && (
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      <span className="font-semibold text-foreground">{prepStep.time}</span>
+                      {" — "}
+                      {prepStep.task}
+                    </p>
+                  )}
+
+                  {/* All ingredients */}
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 block mb-1.5">
+                      Ingredients
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {ingredients.map((ing, j) => (
+                        <span
+                          key={j}
+                          className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
+                            ing.fromPantry
+                              ? "bg-secondary/10 text-secondary border border-secondary/20"
+                              : "bg-muted/60 text-muted-foreground"
+                          }`}
+                        >
+                          {ing.name}
+                          {ing.fromPantry && " ✓"}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Video embed prompt */}
+                  {video && (
+                    <button
+                      onClick={() => setVideoOpen(true)}
+                      className="flex items-center gap-2 text-xs text-secondary hover:text-secondary/80 transition-colors font-medium"
+                    >
+                      <Play className="w-3.5 h-3.5" />
+                      Watch recipe video
+                    </button>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </motion.div>
+
+      {/* Spacer between cards */}
+      {!isLast && <div className="h-3" />}
 
       {/* Video Modal */}
       {video && (
@@ -231,7 +249,7 @@ const DishCard = ({
           </DialogContent>
         </Dialog>
       )}
-    </motion.div>
+    </div>
   );
 };
 
