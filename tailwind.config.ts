@@ -66,6 +66,9 @@ export default {
           savings: "hsl(var(--menu-savings))",
           "course-label": "hsl(var(--menu-course-label))",
         },
+        mic: {
+          teal: "hsl(var(--mic-teal))",
+          "teal-foreground": "hsl(var(--mic-teal-foreground))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
