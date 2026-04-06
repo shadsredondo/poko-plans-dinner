@@ -75,7 +75,7 @@ const StepIngredients = ({ value, onChange }: Props) => {
               disabled={state === "processing"}
               className={`relative flex items-center justify-center w-11 h-11 rounded-full transition-all duration-300 ${
                 state === "listening"
-                  ? "bg-[hsl(var(--mic-teal))] text-[hsl(var(--mic-teal-foreground))] shadow-md"
+                  ? "bg-mic-teal text-mic-teal-foreground shadow-md"
                   : state === "processing"
                   ? "bg-muted text-muted-foreground cursor-wait"
                   : state === "error"
@@ -87,8 +87,8 @@ const StepIngredients = ({ value, onChange }: Props) => {
               {/* Teal pulse rings for listening */}
               {state === "listening" && (
                 <>
-                  <span className="absolute inset-0 rounded-full bg-[hsl(var(--mic-teal))]/20 animate-[mic-pulse_2s_ease-out_infinite]" />
-                  <span className="absolute inset-[-4px] rounded-full bg-[hsl(var(--mic-teal))]/10 animate-[mic-pulse_2s_ease-out_0.4s_infinite]" />
+                  <span className="absolute inset-0 rounded-full bg-mic-teal/20 animate-mic-pulse" />
+                  <span className="absolute inset-[-4px] rounded-full bg-mic-teal/10 animate-mic-pulse [animation-delay:0.4s]" />
                 </>
               )}
 
