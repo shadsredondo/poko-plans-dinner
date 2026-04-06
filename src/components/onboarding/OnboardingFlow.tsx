@@ -50,7 +50,7 @@ const OnboardingFlow = ({ onComplete }: Props) => {
       case 0: return data.guests !== null;
       case 1: return data.ingredients.length > 0;
       case 2: return !!data.effort;
-      case 3: return !!data.cuisine && (data.cuisine !== "custom" || !!data.customCuisine.trim());
+      case 3: return !!data.cuisine;
       case 4: return !!data.skill;
       default: return false;
     }

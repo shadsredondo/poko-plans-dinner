@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { X } from "lucide-react";
+import { X, Mic, MicOff } from "lucide-react";
+import { useVoiceDictation } from "@/hooks/useVoiceDictation";
 
 interface Props {
   value: string[];
@@ -9,10 +10,13 @@ interface Props {
 const StepIngredients = ({ value, onChange }: Props) => {
   const [input, setInput] = useState("");
 
+  const { isListening, isSupported, toggle } = useVoiceDictation((text) => {
+    setInput(text);
+  });
+
   const addIngredient = () => {
     const trimmed = input.trim();
     if (!trimmed) return;
-    // Split by comma to allow batch entry
     const items = trimmed.split(",").map((s) => s.trim()).filter(Boolean);
     const unique = [...new Set([...value, ...items])];
     onChange(unique);
@@ -42,7 +46,7 @@ const StepIngredients = ({ value, onChange }: Props) => {
       </div>
 
       <div className="space-y-4">
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -50,6 +54,22 @@ const StepIngredients = ({ value, onChange }: Props) => {
             placeholder="e.g. chicken, tomatoes, garlic"
             className="flex-1 bg-card border border-input rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
+          {isSupported && (
+            <button
+              onClick={toggle}
+              className={`relative flex items-center justify-center w-11 h-11 rounded-full transition-all ${
+                isListening
+                  ? "bg-destructive text-destructive-foreground shadow-lg"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+              title={isListening ? "Stop listening" : "Dictate ingredients"}
+            >
+              {isListening && (
+                <span className="absolute inset-0 rounded-full bg-destructive/30 animate-ping" />
+              )}
+              {isListening ? <MicOff className="w-4 h-4 relative z-10" /> : <Mic className="w-4 h-4" />}
+            </button>
+          )}
           <button
             onClick={addIngredient}
             disabled={!input.trim()}
@@ -58,6 +78,12 @@ const StepIngredients = ({ value, onChange }: Props) => {
             Add
           </button>
         </div>
+
+        {isListening && (
+          <p className="text-xs text-destructive font-medium animate-pulse">
+            Listening… speak your ingredients
+          </p>
+        )}
 
         {value.length > 0 && (
           <div className="flex flex-wrap gap-2">
