@@ -20,55 +20,50 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
-    const systemPrompt = `You are Poko, a calm, helpful dinner party planning assistant. Your tone is warm but minimal.
+    const systemPrompt = `You are Poko, a calm dinner party planning assistant.
 
-Your job: Given ingredients, number of guests, effort level, cooking skill, and an optional cuisine preference, create a clear cooking timeline of 3-4 dishes.
+Return ONLY valid JSON. No explanations. No text outside JSON.
 
-You must NOT return free text. Return structured JSON in this exact format:
-
+Schema:
 {
   "menu": [
     {
-      "dish": "Dish name",
-      "category": "starter" | "main" | "side" | "dessert",
-      "start_time": "e.g. '1 hour before'",
-      "priority": 1,
-      "ingredients_used": ["ingredient1", "ingredient2"],
-      "missing_ingredients": ["ingredient3"],
-      "savings": 5,
-      "reason": "short explanation of why this dish is placed here"
+      "dish": "string",
+      "category": "starter | main | side | dessert",
+      "importance": "anchor | supporting | optional",
+      "priority": number,
+      "start_time": "string (e.g. 1 hour before)",
+      "start_time_minutes": number,
+      "effort_level": "low | medium | high",
+      "can_overlap": boolean,
+      "ingredients_used": ["string"],
+      "missing_ingredients": ["string"],
+      "savings": number,
+      "reason": "short phrase (max 3-5 words)"
     }
   ],
-  "summary": {
-    "total_savings": 15,
-    "optimization_note": "short sentence explaining how this reduces effort"
-  }
+  "total_savings": number
 }
 
 Rules:
-- Prioritize dishes that take longer first (highest priority = 1)
-- Avoid overlapping complex steps
+- Sort dishes by start_time_minutes descending (earliest/largest number first)
+- Main dishes should have higher priority and importance = "anchor"
+- Avoid overlapping multiple "high" effort dishes unless necessary
+- Keep "reason" concise (no full sentences, max 3-5 words)
 - Prefer pantry ingredients from what the user listed
-- Keep the plan simple and realistic for the selected effort level
 - Limit to 3-4 dishes max
-- start_time must be relative (e.g. "2 hours before", "45 min before", "15 min before", "Just before serving")
-- savings = estimated dollar amount saved by using pantry ingredients for this dish (use 0 if none)
-- ingredients_used = ingredients from the user's list that this dish uses
-- missing_ingredients = items they need to buy
-- reason = one short sentence explaining the timeline placement
+- start_time_minutes = minutes before serving (e.g. 90 for "1 hour 30 min before")
+- savings = estimated dollar amount saved by using pantry ingredients (0 if none)
 - Adapt complexity based on cooking skill:
-  - Beginner: very simple dishes, minimal steps
+  - Beginner: simple dishes, low effort
   - Intermediate: moderate complexity
-  - Advanced: more creative, multi-step elements welcome`;
+  - Advanced: creative, multi-step elements`;
 
-    const userPrompt = `Here's what we're working with:
-- Guests: ${guests} people
-- Ingredients available: ${ingredients}
-- Effort level: ${effort || "medium"}
-- Cooking skill: ${skill || "intermediate"}
-- Cuisine vibe: ${cuisine || "Surprise me!"}
-
-Create the cooking timeline!`;
+    const userPrompt = `Guests: ${guests}
+Ingredients: ${ingredients}
+Effort: ${effort || "medium"}
+Skill: ${skill || "intermediate"}
+Cuisine: ${cuisine || "Surprise me!"}`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -103,11 +98,10 @@ Create the cooking timeline!`;
     }
 
     const data = await response.json();
-    console.log("AI response structure:", JSON.stringify(data).substring(0, 500));
     const content = data.choices?.[0]?.message?.content;
     
     if (!content) {
-      console.error("No content in AI response. Full response:", JSON.stringify(data).substring(0, 1000));
+      console.error("No content in AI response:", JSON.stringify(data).substring(0, 1000));
       throw new Error("AI returned empty response");
     }
 
@@ -128,7 +122,7 @@ Create the cooking timeline!`;
             throw new Error("No JSON found");
           }
         }
-      } catch (e2) {
+      } catch {
         console.error("Failed to parse AI response:", content.substring(0, 500));
         throw new Error("Failed to parse menu");
       }

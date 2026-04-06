@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, ChevronDown, ChevronUp, ShoppingCart } from "lucide-react";
+import { Play, ChevronDown, ChevronUp, ShoppingCart, Flame } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -11,8 +11,12 @@ import {
 interface MenuDish {
   dish: string;
   category: string;
-  start_time: string;
+  importance: string;
   priority: number;
+  start_time: string;
+  start_time_minutes: number;
+  effort_level: string;
+  can_overlap: boolean;
   ingredients_used: string[];
   missing_ingredients: string[];
   savings: number;
@@ -40,12 +44,20 @@ const categoryLabels: Record<string, string> = {
   dessert: "Dessert",
 };
 
+const effortColors: Record<string, string> = {
+  low: "text-secondary",
+  medium: "text-amber-500",
+  high: "text-destructive",
+};
+
 const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
   const [expanded, setExpanded] = useState(false);
   const [videoOpen, setVideoOpen] = useState(false);
 
   const visibleIngredients = dish.ingredients_used.slice(0, 3);
   const hiddenCount = dish.ingredients_used.length - 3;
+
+  const isAnchor = dish.importance === "anchor";
 
   return (
     <div className="relative">
@@ -62,7 +74,11 @@ const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
       >
         {/* Timeline dot */}
         <div className="flex flex-col items-center pt-1 shrink-0">
-          <div className="w-[10px] h-[10px] rounded-full bg-secondary border-2 border-secondary/60 shadow-sm" />
+          <div className={`w-[10px] h-[10px] rounded-full shadow-sm ${
+            isAnchor
+              ? "bg-primary border-2 border-primary/60"
+              : "bg-secondary border-2 border-secondary/60"
+          }`} />
         </div>
 
         {/* Card */}
@@ -75,11 +91,13 @@ const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
           <motion.button
             onClick={() => setExpanded(!expanded)}
             whileTap={{ scale: 0.995 }}
-            className="w-full text-left bg-menu-card rounded-xl px-4 py-3 shadow-sm hover:shadow-md transition-shadow duration-200 border border-menu-border/50 group cursor-pointer"
+            className={`w-full text-left bg-menu-card rounded-xl px-4 py-3 shadow-sm hover:shadow-md transition-shadow duration-200 border group cursor-pointer ${
+              isAnchor ? "border-primary/30" : "border-menu-border/50"
+            }`}
           >
             {/* Main row */}
             <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3 min-w-0 flex-1">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
                 <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground/60 bg-muted/40 rounded-full px-2 py-0.5 shrink-0">
                   {categoryLabels[dish.category] || dish.category}
                 </span>
@@ -90,6 +108,9 @@ const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
 
               {/* Right side */}
               <div className="flex items-center gap-2 shrink-0">
+                {/* Effort indicator */}
+                <Flame className={`w-3 h-3 ${effortColors[dish.effort_level] || "text-muted-foreground"}`} />
+
                 {dish.savings > 0 && (
                   <span className="text-[11px] font-semibold text-menu-savings whitespace-nowrap">
                     Saved ${dish.savings}
@@ -115,7 +136,7 @@ const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
               </div>
             </div>
 
-            {/* Ingredient chips */}
+            {/* Ingredient chips + reason */}
             <div className="flex items-center gap-1.5 mt-2">
               {visibleIngredients.map((ing, j) => (
                 <span
@@ -130,6 +151,9 @@ const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
                   +{hiddenCount} more
                 </span>
               )}
+              <span className="text-[10px] text-muted-foreground/50 ml-auto italic truncate max-w-[120px]">
+                {dish.reason}
+              </span>
             </div>
           </motion.button>
 
@@ -144,10 +168,24 @@ const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
                 className="overflow-hidden"
               >
                 <div className="bg-menu-card border border-menu-border/50 border-t-0 rounded-b-xl px-4 py-3 -mt-1 space-y-3">
-                  {/* Reason */}
-                  <p className="text-xs text-muted-foreground leading-relaxed italic">
-                    {dish.reason}
-                  </p>
+                  {/* Meta badges */}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                      {dish.importance}
+                    </span>
+                    <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                      dish.effort_level === "low" ? "bg-secondary/10 text-secondary" :
+                      dish.effort_level === "high" ? "bg-destructive/10 text-destructive" :
+                      "bg-amber-500/10 text-amber-600"
+                    }`}>
+                      {dish.effort_level} effort
+                    </span>
+                    {dish.can_overlap && (
+                      <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-muted/60 text-muted-foreground">
+                        Can overlap
+                      </span>
+                    )}
+                  </div>
 
                   {/* Pantry ingredients */}
                   <div>

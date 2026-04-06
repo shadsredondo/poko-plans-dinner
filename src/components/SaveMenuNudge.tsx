@@ -49,7 +49,7 @@ const SaveMenuNudge = ({ menu, guests, ingredients, effort, skill, cuisine }: Sa
       skill: menuData?.skill ?? skill,
       cuisine: menuData?.cuisine ?? cuisine,
       total_estimated_cost: null,
-      total_pantry_savings: m.summary?.total_savings ?? m.totalPantrySavings ?? null,
+      total_pantry_savings: m.total_savings ?? m.summary?.total_savings ?? null,
     };
   };
 

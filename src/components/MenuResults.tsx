@@ -7,26 +7,23 @@ import DishCard from "./DishCard";
 interface MenuDish {
   dish: string;
   category: string;
-  start_time: string;
+  importance: string;
   priority: number;
+  start_time: string;
+  start_time_minutes: number;
+  effort_level: string;
+  can_overlap: boolean;
   ingredients_used: string[];
   missing_ingredients: string[];
   savings: number;
   reason: string;
 }
 
-interface MenuSummary {
-  total_savings: number;
-  optimization_note: string;
-}
-
 interface MenuData {
   menu: MenuDish[];
-  summary: MenuSummary;
+  total_savings: number;
   // Legacy compat
-  menuTitle?: string;
-  courses?: any[];
-  totalPantrySavings?: number;
+  summary?: { total_savings?: number; optimization_note?: string };
 }
 
 interface Video {
@@ -39,10 +36,10 @@ interface Video {
 
 const MenuResults = ({ menu }: { menu: MenuData }) => {
   const dishes = menu.menu || [];
-  const summary = menu.summary || { total_savings: 0, optimization_note: "" };
+  const totalSavings = menu.total_savings ?? menu.summary?.total_savings ?? 0;
 
-  // Sort by priority (1 = first)
-  const sortedDishes = [...dishes].sort((a, b) => a.priority - b.priority);
+  // Sort by start_time_minutes descending (earliest task first)
+  const sortedDishes = [...dishes].sort((a, b) => (b.start_time_minutes ?? 0) - (a.start_time_minutes ?? 0));
 
   const [videos, setVideos] = useState<Video[]>([]);
   const [videosLoading, setVideosLoading] = useState(true);
@@ -84,16 +81,10 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
         <h2 className="font-display text-lg font-bold text-foreground tracking-tight">
           Your Cooking Timeline
         </h2>
-        {summary.optimization_note && (
-          <p className="text-xs text-muted-foreground mt-1 flex items-center justify-center gap-1.5">
-            <Sparkles className="w-3 h-3 text-secondary" />
-            {summary.optimization_note}
-          </p>
-        )}
       </motion.div>
 
       {/* Savings Banner */}
-      {summary.total_savings > 0 && (
+      {totalSavings > 0 && (
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -102,7 +93,7 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
         >
           <Wallet className="w-4 h-4 text-menu-savings" />
           <span className="text-sm font-semibold text-menu-savings">
-            Saved ~${summary.total_savings} using your pantry
+            Saved ~${totalSavings} using your pantry
           </span>
         </motion.div>
       )}
