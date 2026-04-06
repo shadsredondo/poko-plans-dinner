@@ -5,27 +5,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
-
-  try {
-    const { guests, ingredients, effort, skill, cuisine, time_limit } = await req.json();
-    
-    if (!ingredients || !guests) {
-      return new Response(JSON.stringify({ error: "Missing required fields" }), {
-        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
-
-    const systemPrompt = `You are Poko, a calm dinner party planning assistant.
-
-Return ONLY valid JSON. No explanations. No text outside JSON.
-
-Schema:
-{
+const SCHEMA = `{
   "menu": [
     {
       "dish": "string",
@@ -43,9 +23,10 @@ Schema:
     }
   ],
   "total_savings": number
-}
+}`;
 
-Rules:
+const RULES = `Rules:
+- Return ONLY valid JSON. No explanations. No prose. No text outside JSON.
 - Sort dishes by start_time_minutes descending (earliest/largest number first)
 - Main dishes should have higher priority and importance = "anchor"
 - Avoid overlapping multiple "high" effort dishes unless necessary
@@ -60,12 +41,73 @@ Rules:
   - Intermediate: moderate complexity
   - Advanced: creative, multi-step elements`;
 
-    const userPrompt = `Guests: ${guests}
+const SYSTEM_INITIAL = `You are Poko, a calm dinner party planning assistant.
+
+Mode: INITIAL PLANNING
+Generate a new menu plan from scratch based on the user's inputs.
+
+Schema:
+${SCHEMA}
+
+${RULES}`;
+
+const SYSTEM_MODIFY = `You are Poko, a calm dinner party planning assistant.
+
+Mode: PLAN MODIFICATION
+The user has an existing plan and wants to modify it.
+
+Instructions:
+- Preserve as much of the current plan as possible
+- Change ONLY what is necessary to satisfy the new constraint
+- Recalculate ALL affected fields: dish, category, importance, priority, start_time, start_time_minutes, effort_level, can_overlap, ingredients_used, missing_ingredients, savings, reason
+- Always return the FULL updated plan (not just the changed parts)
+
+Schema:
+${SCHEMA}
+
+${RULES}`;
+
+serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  try {
+    const { guests, ingredients, effort, skill, cuisine, time_limit, current_plan, modification } = await req.json();
+
+    if (!ingredients || !guests) {
+      return new Response(JSON.stringify({ error: "Missing required fields" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+
+    const isModification = !!current_plan && !!modification;
+
+    const systemPrompt = isModification ? SYSTEM_MODIFY : SYSTEM_INITIAL;
+
+    let userPrompt: string;
+    if (isModification) {
+      userPrompt = `Current plan:
+${JSON.stringify(current_plan, null, 2)}
+
+Context:
+Guests: ${guests}
+Ingredients: ${ingredients}
+Effort: ${effort || "medium"}
+Skill: ${skill || "intermediate"}
+Cuisine: ${cuisine || "Surprise me!"}
+Time limit: ${time_limit || "no limit"}
+
+Modification requested: ${modification}`;
+    } else {
+      userPrompt = `Guests: ${guests}
 Ingredients: ${ingredients}
 Effort: ${effort || "medium"}
 Skill: ${skill || "intermediate"}
 Cuisine: ${cuisine || "Surprise me!"}
 Time limit: ${time_limit || "no limit"}`;
+    }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -101,7 +143,7 @@ Time limit: ${time_limit || "no limit"}`;
 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content;
-    
+
     if (!content) {
       console.error("No content in AI response:", JSON.stringify(data).substring(0, 1000));
       throw new Error("AI returned empty response");
