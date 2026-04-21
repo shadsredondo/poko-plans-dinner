@@ -167,7 +167,7 @@ const SaveMenuNudge = ({ menu, guests, ingredients, effort, skill, cuisine }: Sa
           variant="ghost"
           size="sm"
           className="text-[11px] uppercase tracking-[0.22em] font-normal"
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/menus")}
         >
           View saved menus →
         </Button>
