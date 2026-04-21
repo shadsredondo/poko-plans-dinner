@@ -10,7 +10,7 @@ const StepGuests = ({ value, onChange }: Props) => (
     <div className="space-y-4">
       <p className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground">Gathering</p>
       <h1 className="font-display text-4xl md:text-5xl font-normal text-foreground leading-[1.05]">
-        How many seats at the table?
+        How many people are you expecting at the party?
       </h1>
     </div>
     <div className="grid grid-cols-4 gap-px bg-border">
