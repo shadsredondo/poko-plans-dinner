@@ -25,7 +25,7 @@ const PokoAvatar = ({ size = "md", animate = true }: PokoAvatarProps) => {
 
   return (
     <Wrapper
-      className={`${sizeMap[size]} rounded-full overflow-hidden flex items-center justify-center shadow-lg bg-white`}
+      className={`${sizeMap[size]} rounded-full overflow-hidden flex items-center justify-center bg-muted ring-1 ring-border`}
       {...animateProps}
     >
       <img src={pokoImg} alt="Poko" className="w-full h-full object-cover" />
