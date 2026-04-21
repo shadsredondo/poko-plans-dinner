@@ -40,8 +40,9 @@ const AuthAwareHome = () => {
     );
   }
 
-  if (hasDraft) return <Index />;
-  if (user) return <SavedMenus />;
+  if (user) {
+    return hasDraft ? <Index /> : <SavedMenus />;
+  }
   return <Landing />;
 };
 
