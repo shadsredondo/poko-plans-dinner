@@ -56,6 +56,17 @@
     --mic-teal: 95 14% 38%;
     --mic-teal-foreground: 38 32% 96%;
 
+    /* Joyful food-inspired accents */
+    --citrus: 38 78% 58%;
+    --citrus-soft: 42 70% 88%;
+    --berry: 348 52% 52%;
+    --berry-soft: 348 48% 92%;
+    --terracotta-soft: 16 52% 90%;
+    --sage-soft: 95 22% 88%;
+    --cream: 36 44% 96%;
+    --cream-warm: 32 38% 93%;
+    --shadow-warm: 24 30% 30%;
+
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
