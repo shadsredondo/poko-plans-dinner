@@ -75,23 +75,6 @@ const Landing = () => {
                 </span>
               </div>
 
-              {/* Ingredient chips */}
-              <div className="flex flex-wrap gap-2 pt-4">
-                {[
-                  { label: "Burrata", bg: "bg-cream", color: "text-foreground/70" },
-                  { label: "Lemon", bg: "bg-citrus-soft", color: "text-foreground/70" },
-                  { label: "Basil", bg: "bg-sage-soft", color: "text-foreground/70" },
-                  { label: "Fig", bg: "bg-berry-soft", color: "text-foreground/70" },
-                  { label: "Olive oil", bg: "bg-terracotta-soft", color: "text-foreground/70" },
-                ].map((tag) => (
-                  <span
-                    key={tag.label}
-                    className={`${tag.bg} ${tag.color} text-[11px] tracking-wide px-3 py-1.5 rounded-full border border-border/40`}
-                  >
-                    {tag.label}
-                  </span>
-                ))}
-              </div>
             </motion.div>
 
             {/* Hero image column */}
