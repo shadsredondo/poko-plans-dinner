@@ -4,29 +4,41 @@ interface Props {
 }
 
 const options = [
-  { label: "🥗 Assembler", value: "beginner", desc: "Very simple, minimal cooking" },
-  { label: "🍳 Comfortable", value: "intermediate", desc: "Can follow recipes and improvise" },
-  { label: "👨‍🍳 Pro chef", value: "advanced", desc: "Knows the kitchen inside out" },
+  { label: "Assembler", value: "beginner", desc: "Simple plates, light hand" },
+  { label: "Comfortable", value: "intermediate", desc: "At ease with most recipes" },
+  { label: "Practiced", value: "advanced", desc: "The kitchen is familiar terrain" },
 ];
 
 const StepSkill = ({ value, onChange }: Props) => (
-  <div className="space-y-8">
-    <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground">
-      What's your cooking level?
-    </h1>
-    <div className="space-y-3">
+  <div className="space-y-12">
+    <div className="space-y-4">
+      <p className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground">Hand</p>
+      <h1 className="font-display text-4xl md:text-5xl font-normal text-foreground leading-[1.05]">
+        How well do you cook?
+      </h1>
+    </div>
+    <div className="border-t border-border">
       {options.map((opt) => (
         <button
           key={opt.value}
           onClick={() => onChange(opt.value)}
-          className={`w-full text-left rounded-2xl px-6 py-5 border-2 transition-all ${
-            value === opt.value
-              ? "bg-primary/10 border-primary shadow-md"
-              : "bg-card border-border hover:border-primary/50"
+          className={`w-full text-left flex items-baseline justify-between gap-6 py-6 border-b border-border transition-colors group ${
+            value === opt.value ? "bg-muted/50" : "hover:bg-muted/30"
           }`}
         >
-          <span className="text-lg font-bold text-foreground">{opt.label}</span>
-          <p className="text-sm text-muted-foreground mt-0.5">{opt.desc}</p>
+          <div className="flex items-baseline gap-6 px-2">
+            <span className={`font-display text-2xl transition-colors ${
+              value === opt.value ? "text-foreground" : "text-foreground/70 group-hover:text-foreground"
+            }`}>
+              {opt.label}
+            </span>
+            <span className="text-sm text-muted-foreground italic">{opt.desc}</span>
+          </div>
+          <span className={`text-[10px] uppercase tracking-[0.24em] pr-2 transition-opacity ${
+            value === opt.value ? "opacity-100 text-foreground" : "opacity-0"
+          }`}>
+            Selected
+          </span>
         </button>
       ))}
     </div>

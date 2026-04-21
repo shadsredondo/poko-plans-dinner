@@ -156,17 +156,17 @@ const SaveMenuNudge = ({ menu, guests, ingredients, effort, skill, cuisine }: Sa
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center space-y-3 pt-2 pb-2"
+        className="text-center space-y-3 pt-8 pb-2 border-t border-border/60 mt-8"
       >
-        <div className="flex items-center justify-center gap-2 text-secondary">
+        <div className="flex items-center justify-center gap-2 text-foreground">
           <Check className="w-4 h-4" />
-          <span className="text-sm font-semibold">Saved to your menus 🎉</span>
+          <span className="text-[11px] uppercase tracking-[0.22em]">Saved to your menus</span>
         </div>
-        <p className="text-xs text-muted-foreground">You can find this in your saved menus.</p>
+        <p className="text-xs text-muted-foreground italic">Kept safely for the evening.</p>
         <Button
           variant="ghost"
           size="sm"
-          className="text-xs font-semibold"
+          className="text-[11px] uppercase tracking-[0.22em] font-normal"
           onClick={() => navigate("/")}
         >
           View saved menus →
@@ -181,18 +181,18 @@ const SaveMenuNudge = ({ menu, guests, ingredients, effort, skill, cuisine }: Sa
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.4 }}
-        className="text-center space-y-3 pt-2 pb-2"
+        className="text-center space-y-4 pt-10 pb-2 border-t border-border/60 mt-8"
       >
-        <p className="text-sm text-muted-foreground">
-          Save this menu so you don't lose it.
+        <p className="text-sm text-muted-foreground italic">
+          Keep this menu close, for the next quiet evening.
         </p>
-        <Button
+        <button
           onClick={handleSave}
-          className="rounded-full px-6 gap-2 font-bold shadow-md"
+          className="inline-flex items-center gap-3 border border-foreground/80 text-foreground px-7 py-3 text-[11px] uppercase tracking-[0.22em] hover:bg-foreground hover:text-background transition-colors duration-300"
         >
-          <Bookmark className="w-4 h-4" />
+          <Bookmark className="w-3.5 h-3.5" strokeWidth={1.5} />
           Save this menu
-        </Button>
+        </button>
       </motion.div>
 
       <Dialog open={open} onOpenChange={setOpen}>
