@@ -71,6 +71,24 @@ export default {
           teal: "hsl(var(--mic-teal))",
           "teal-foreground": "hsl(var(--mic-teal-foreground))",
         },
+        citrus: {
+          DEFAULT: "hsl(var(--citrus))",
+          soft: "hsl(var(--citrus-soft))",
+        },
+        berry: {
+          DEFAULT: "hsl(var(--berry))",
+          soft: "hsl(var(--berry-soft))",
+        },
+        terracotta: {
+          soft: "hsl(var(--terracotta-soft))",
+        },
+        sage: {
+          soft: "hsl(var(--sage-soft))",
+        },
+        cream: {
+          DEFAULT: "hsl(var(--cream))",
+          warm: "hsl(var(--cream-warm))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
