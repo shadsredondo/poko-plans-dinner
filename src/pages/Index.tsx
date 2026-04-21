@@ -47,7 +47,7 @@ const Index = () => {
           <span className="font-display text-lg tracking-tight text-foreground">Poko</span>
           {user && (
             <button
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/menus")}
               className="hidden sm:flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors ml-4 text-xs uppercase tracking-[0.18em]"
             >
               <BookOpen className="w-3.5 h-3.5" />
