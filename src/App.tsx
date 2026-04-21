@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { hasStoredChatState } from "@/lib/chatStorage";
 import Index from "./pages/Index.tsx";
+import Landing from "./pages/Landing.tsx";
 import SavedMenus from "./pages/SavedMenus.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import { useAuth } from "./hooks/useAuth.tsx";
@@ -39,7 +40,9 @@ const AuthAwareHome = () => {
     );
   }
 
-  return user && !hasDraft ? <SavedMenus /> : <Index />;
+  if (hasDraft) return <Index />;
+  if (user) return <SavedMenus />;
+  return <Landing />;
 };
 
 const App = () => (
