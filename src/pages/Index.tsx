@@ -40,31 +40,36 @@ const Index = () => {
   const cuisineVal = onboardingData?.cuisine === "custom" ? onboardingData.customCuisine : onboardingData?.cuisine || "";
 
   return (
-    <div className="min-h-screen bg-transparent flex flex-col">
-      <header className="flex items-center justify-between px-4 py-3 border-b border-border bg-background/85 backdrop-blur-sm">
-        <div className="flex items-center gap-3">
+    <div className="min-h-screen bg-background flex flex-col">
+      <header className="flex items-center justify-between px-6 md:px-10 py-5 border-b border-border/60 bg-background/90 backdrop-blur-md sticky top-0 z-20">
+        <div className="flex items-center gap-4">
           <PokoAvatar size="sm" animate={false} />
-          <span className="font-display font-bold text-foreground">Poko</span>
+          <span className="font-display text-lg tracking-tight text-foreground">Poko</span>
           {user && (
             <button
               onClick={() => navigate("/")}
-              className="flex items-center gap-1.5 bg-primary/10 text-primary hover:bg-primary/20 transition-colors rounded-full px-3 py-1.5"
+              className="hidden sm:flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors ml-4 text-xs uppercase tracking-[0.18em]"
             >
-              <BookOpen className="w-4 h-4" />
-              <span className="text-sm font-bold font-display">My Menus</span>
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Menus</span>
             </button>
           )}
         </div>
-        <div className="flex items-center gap-3">
-          <button onClick={handleReset} className="text-muted-foreground hover:text-foreground transition-colors" title="Start over">
-            <RotateCcw className="w-4 h-4" />
+        <div className="flex items-center gap-5">
+          <button
+            onClick={handleReset}
+            className="text-muted-foreground hover:text-foreground transition-colors text-xs uppercase tracking-[0.18em] flex items-center gap-2"
+            title="Start over"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Restart</span>
           </button>
           <AccountMenu />
         </div>
       </header>
 
-      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4 max-w-lg mx-auto w-full">
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      <div className="flex-1 overflow-y-auto px-6 md:px-10 py-12 space-y-8 max-w-2xl mx-auto w-full">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
           <MenuResults menu={menu} />
           <SaveMenuNudge
             menu={menu}
@@ -78,13 +83,13 @@ const Index = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.8 }}
-            className="flex justify-center pt-2 pb-6"
+            className="flex justify-center pt-10 pb-6"
           >
             <button
               onClick={handleReset}
-              className="bg-primary text-primary-foreground px-6 py-3 rounded-full font-bold text-sm shadow-lg hover:shadow-xl transition-shadow"
+              className="group inline-flex items-center gap-3 border border-foreground/80 text-foreground px-8 py-3.5 text-xs uppercase tracking-[0.22em] hover:bg-foreground hover:text-background transition-colors duration-300"
             >
-              Plan another dinner 🔄
+              Plan another evening
             </button>
           </motion.div>
         </motion.div>

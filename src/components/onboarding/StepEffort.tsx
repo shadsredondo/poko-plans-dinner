@@ -4,29 +4,41 @@ interface Props {
 }
 
 const options = [
-  { label: "😌 Chill", value: "minimal", desc: "Keep it simple and easy" },
-  { label: "🍳 Moderate", value: "moderate", desc: "Some effort, good results" },
-  { label: "🔥 All in", value: "high", desc: "Let's impress everyone" },
+  { label: "Unhurried", value: "minimal", desc: "A quiet, simple evening" },
+  { label: "Considered", value: "moderate", desc: "Some craft, balanced result" },
+  { label: "Devoted", value: "high", desc: "An evening worth remembering" },
 ];
 
 const StepEffort = ({ value, onChange }: Props) => (
-  <div className="space-y-8">
-    <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground">
-      How much effort are we putting in?
-    </h1>
-    <div className="space-y-3">
+  <div className="space-y-12">
+    <div className="space-y-4">
+      <p className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground">Tempo</p>
+      <h1 className="font-display text-4xl md:text-5xl font-normal text-foreground leading-[1.05]">
+        How would you like to cook?
+      </h1>
+    </div>
+    <div className="border-t border-border">
       {options.map((opt) => (
         <button
           key={opt.value}
           onClick={() => onChange(opt.value)}
-          className={`w-full text-left rounded-2xl px-6 py-5 border-2 transition-all ${
-            value === opt.value
-              ? "bg-primary/10 border-primary shadow-md"
-              : "bg-card border-border hover:border-primary/50"
+          className={`w-full text-left flex items-baseline justify-between gap-6 py-6 border-b border-border transition-colors group ${
+            value === opt.value ? "bg-muted/50" : "hover:bg-muted/30"
           }`}
         >
-          <span className="text-lg font-bold text-foreground">{opt.label}</span>
-          <p className="text-sm text-muted-foreground mt-0.5">{opt.desc}</p>
+          <div className="flex items-baseline gap-6 px-2">
+            <span className={`font-display text-2xl transition-colors ${
+              value === opt.value ? "text-foreground" : "text-foreground/70 group-hover:text-foreground"
+            }`}>
+              {opt.label}
+            </span>
+            <span className="text-sm text-muted-foreground italic">{opt.desc}</span>
+          </div>
+          <span className={`text-[10px] uppercase tracking-[0.24em] pr-2 transition-opacity ${
+            value === opt.value ? "opacity-100 text-foreground" : "opacity-0"
+          }`}>
+            Selected
+          </span>
         </button>
       ))}
     </div>

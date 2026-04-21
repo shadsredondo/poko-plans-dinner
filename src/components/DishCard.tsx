@@ -44,10 +44,10 @@ const categoryLabels: Record<string, string> = {
   dessert: "Dessert",
 };
 
-const effortColors: Record<string, string> = {
-  low: "text-secondary",
-  medium: "text-amber-500",
-  high: "text-destructive",
+const effortLabels: Record<string, string> = {
+  low: "Effortless",
+  medium: "Considered",
+  high: "Involved",
 };
 
 const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
@@ -60,195 +60,146 @@ const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
   const isAnchor = dish.importance === "anchor";
 
   return (
-    <div className="relative">
-      {/* Timeline connector */}
-      {!isLast && (
-        <div className="absolute left-[19px] top-[44px] bottom-[-12px] w-px bg-gradient-to-b from-secondary/40 to-secondary/10 z-0" />
-      )}
-
-      <motion.div
-        initial={{ opacity: 0, x: -16 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.08 + index * 0.1, ease: "easeOut" }}
-        className="relative z-10 flex gap-4"
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.08 + index * 0.08, ease: [0.22, 1, 0.36, 1], duration: 0.6 }}
+      className={`relative ${!isLast ? "border-b border-border/60" : ""}`}
+    >
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full text-left py-7 group"
       >
-        {/* Timeline dot */}
-        <div className="flex flex-col items-center pt-1 shrink-0">
-          <div className={`w-[10px] h-[10px] rounded-full shadow-sm ${
-            isAnchor
-              ? "bg-primary border-2 border-primary/60"
-              : "bg-secondary border-2 border-secondary/60"
-          }`} />
+        {/* Header row */}
+        <div className="grid grid-cols-[80px_1fr_auto] gap-6 items-baseline">
+          {/* Time column */}
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+              {dish.start_time}
+            </span>
+            {isAnchor && (
+              <span className="text-[9px] uppercase tracking-[0.24em] text-accent">Anchor</span>
+            )}
+          </div>
+
+          {/* Dish */}
+          <div className="min-w-0">
+            <p className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground mb-2">
+              {categoryLabels[dish.category] || dish.category}
+            </p>
+            <h3 className="font-display text-2xl md:text-[26px] font-normal text-foreground leading-[1.15] tracking-tight">
+              {dish.dish}
+            </h3>
+            <p className="text-[13px] text-muted-foreground mt-2 leading-relaxed line-clamp-1 italic">
+              {dish.reason}
+            </p>
+          </div>
+
+          {/* Right meta */}
+          <div className="flex items-center gap-4 self-center">
+            {video && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setVideoOpen(true);
+                }}
+                className="w-9 h-9 rounded-full border border-border hover:border-foreground hover:bg-foreground hover:text-background flex items-center justify-center transition-colors"
+                title="Reference"
+              >
+                <Play className="w-3 h-3" />
+              </button>
+            )}
+            <div className="text-muted-foreground group-hover:text-foreground transition-colors">
+              {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </div>
+          </div>
         </div>
 
-        {/* Card */}
-        <div className="flex-1 min-w-0">
-          {/* Time badge */}
-          <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-secondary mb-1.5 block">
-            {dish.start_time}
-          </span>
+        {/* Quiet ingredient row */}
+        <div className="grid grid-cols-[80px_1fr_auto] gap-6 mt-5 items-center">
+          <div />
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            {visibleIngredients.map((ing, j) => (
+              <span key={j} className="text-[12px] text-foreground/80">
+                {ing}
+                {j < visibleIngredients.length - 1 && <span className="text-muted-foreground/40 ml-3">·</span>}
+              </span>
+            ))}
+            {hiddenCount > 0 && (
+              <span className="text-[11px] text-muted-foreground italic">+{hiddenCount} more</span>
+            )}
+          </div>
+          {dish.savings > 0 && (
+            <span className="text-[11px] uppercase tracking-[0.18em] text-menu-savings whitespace-nowrap">
+              −${dish.savings}
+            </span>
+          )}
+        </div>
+      </button>
 
-          <motion.button
-            onClick={() => setExpanded(!expanded)}
-            whileTap={{ scale: 0.995 }}
-            className={`w-full text-left bg-menu-card rounded-xl px-4 py-3 shadow-sm hover:shadow-md transition-shadow duration-200 border group cursor-pointer ${
-              isAnchor ? "border-primary/30" : "border-menu-border/50"
-            }`}
+      {/* Expanded — editorial detail panel */}
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden"
           >
-            {/* Main row */}
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2 min-w-0 flex-1">
-                <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground/60 bg-muted/40 rounded-full px-2 py-0.5 shrink-0">
-                  {categoryLabels[dish.category] || dish.category}
-                </span>
-                <h3 className="font-display font-bold text-foreground text-[15px] leading-snug truncate">
-                  {dish.dish}
-                </h3>
-              </div>
-
-              {/* Right side */}
-              <div className="flex items-center gap-2 shrink-0">
-                {/* Effort indicator */}
-                <Flame className={`w-3 h-3 ${effortColors[dish.effort_level] || "text-muted-foreground"}`} />
-
-                {dish.savings > 0 && (
-                  <span className="text-[11px] font-semibold text-menu-savings whitespace-nowrap">
-                    Saved ${dish.savings}
+            <div className="grid grid-cols-1 md:grid-cols-[80px_1fr] gap-6 pb-8">
+              <div className="hidden md:block" />
+              <div className="space-y-6 max-w-xl">
+                <div className="flex items-center gap-6 text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                  <span className="flex items-center gap-2">
+                    <Flame className="w-3 h-3" />
+                    {effortLabels[dish.effort_level] || dish.effort_level}
                   </span>
+                  {dish.can_overlap && <span>Can overlap</span>}
+                </div>
+
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground mb-3">
+                    From the pantry
+                  </p>
+                  <p className="text-[14px] text-foreground/85 leading-relaxed">
+                    {dish.ingredients_used.join(", ")}
+                  </p>
+                </div>
+
+                {dish.missing_ingredients.length > 0 && (
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground mb-3 flex items-center gap-2">
+                      <ShoppingCart className="w-3 h-3" />
+                      To gather
+                    </p>
+                    <p className="text-[14px] text-foreground/85 leading-relaxed">
+                      {dish.missing_ingredients.join(", ")}
+                    </p>
+                  </div>
                 )}
 
                 {video && (
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setVideoOpen(true);
-                    }}
-                    className="w-7 h-7 rounded-full bg-secondary/10 hover:bg-secondary/20 flex items-center justify-center transition-colors"
-                    title="Watch recipe video"
+                    onClick={() => setVideoOpen(true)}
+                    className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-foreground border-b border-foreground/40 pb-1 hover:border-foreground transition-colors"
                   >
-                    <Play className="w-3 h-3 text-secondary" />
+                    <Play className="w-3 h-3" />
+                    View reference
                   </button>
                 )}
-
-                <div className="w-5 h-5 flex items-center justify-center text-muted-foreground/50 group-hover:text-muted-foreground transition-colors">
-                  {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                </div>
               </div>
             </div>
-
-            {/* Ingredient chips + reason */}
-            <div className="flex items-center gap-1.5 mt-2">
-              {visibleIngredients.map((ing, j) => (
-                <span
-                  key={j}
-                  className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary/10 text-secondary border border-secondary/20"
-                >
-                  {ing}
-                </span>
-              ))}
-              {hiddenCount > 0 && (
-                <span className="text-[10px] text-muted-foreground/60 font-medium">
-                  +{hiddenCount} more
-                </span>
-              )}
-              <span className="text-[10px] text-muted-foreground/50 ml-auto italic truncate max-w-[120px]">
-                {dish.reason}
-              </span>
-            </div>
-          </motion.button>
-
-          {/* Expanded content */}
-          <AnimatePresence>
-            {expanded && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.2, ease: "easeInOut" }}
-                className="overflow-hidden"
-              >
-                <div className="bg-menu-card border border-menu-border/50 border-t-0 rounded-b-xl px-4 py-3 -mt-1 space-y-3">
-                  {/* Meta badges */}
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-                      {dish.importance}
-                    </span>
-                    <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                      dish.effort_level === "low" ? "bg-secondary/10 text-secondary" :
-                      dish.effort_level === "high" ? "bg-destructive/10 text-destructive" :
-                      "bg-amber-500/10 text-amber-600"
-                    }`}>
-                      {dish.effort_level} effort
-                    </span>
-                    {dish.can_overlap && (
-                      <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-muted/60 text-muted-foreground">
-                        Can overlap
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Pantry ingredients */}
-                  <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 block mb-1.5">
-                      From your pantry
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {dish.ingredients_used.map((ing, j) => (
-                        <span
-                          key={j}
-                          className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary/10 text-secondary border border-secondary/20"
-                        >
-                          {ing} ✓
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Missing ingredients */}
-                  {dish.missing_ingredients.length > 0 && (
-                    <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 block mb-1.5 flex items-center gap-1">
-                        <ShoppingCart className="w-3 h-3" />
-                        Need to buy
-                      </span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {dish.missing_ingredients.map((ing, j) => (
-                          <span
-                            key={j}
-                            className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted/60 text-muted-foreground"
-                          >
-                            {ing}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Video */}
-                  {video && (
-                    <button
-                      onClick={() => setVideoOpen(true)}
-                      className="flex items-center gap-2 text-xs text-secondary hover:text-secondary/80 transition-colors font-medium"
-                    >
-                      <Play className="w-3.5 h-3.5" />
-                      Watch recipe video
-                    </button>
-                  )}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </motion.div>
-
-      {!isLast && <div className="h-3" />}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Video Modal */}
       {video && (
         <Dialog open={videoOpen} onOpenChange={setVideoOpen}>
-          <DialogContent className="sm:max-w-2xl p-0 overflow-hidden">
-            <DialogHeader className="px-5 pt-5 pb-2">
-              <DialogTitle className="text-base font-semibold truncate">{dish.dish}</DialogTitle>
+          <DialogContent className="sm:max-w-2xl p-0 overflow-hidden border-border">
+            <DialogHeader className="px-6 pt-6 pb-3">
+              <DialogTitle className="font-display text-xl font-normal truncate">{dish.dish}</DialogTitle>
             </DialogHeader>
             <div className="aspect-video w-full">
               <iframe
@@ -262,7 +213,7 @@ const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
           </DialogContent>
         </Dialog>
       )}
-    </div>
+    </motion.div>
   );
 };
 

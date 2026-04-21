@@ -6,19 +6,22 @@ interface Props {
 const options = [2, 4, 6, 8];
 
 const StepGuests = ({ value, onChange }: Props) => (
-  <div className="space-y-8">
-    <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground">
-      How many people are you hosting?
-    </h1>
-    <div className="flex flex-wrap gap-3">
+  <div className="space-y-12">
+    <div className="space-y-4">
+      <p className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground">Gathering</p>
+      <h1 className="font-display text-4xl md:text-5xl font-normal text-foreground leading-[1.05]">
+        How many seats at the table?
+      </h1>
+    </div>
+    <div className="grid grid-cols-4 gap-px bg-border">
       {options.map((n) => (
         <button
           key={n}
           onClick={() => onChange(n)}
-          className={`w-20 h-20 rounded-2xl text-2xl font-bold border-2 transition-all ${
+          className={`aspect-square flex items-center justify-center font-display text-3xl transition-colors duration-300 ${
             value === n
-              ? "bg-primary text-primary-foreground border-primary shadow-lg scale-105"
-              : "bg-card text-foreground border-border hover:border-primary/50"
+              ? "bg-foreground text-background"
+              : "bg-background text-foreground hover:bg-muted"
           }`}
         >
           {n === 8 ? "8+" : n}

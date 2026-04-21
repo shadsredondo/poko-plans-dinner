@@ -71,42 +71,52 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
   }
 
   return (
-    <div className="space-y-5">
-      {/* Header */}
+    <div className="space-y-10">
+      {/* Editorial header */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center py-2"
+        transition={{ duration: 0.6 }}
+        className="space-y-3"
       >
-        <h2 className="font-display text-lg font-bold text-foreground tracking-tight">
-          Your Cooking Timeline
+        <p className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground">
+          The Evening · Plan
+        </p>
+        <h2 className="font-display text-3xl md:text-4xl font-normal text-foreground leading-[1.1]">
+          Your hosting timeline
         </h2>
+        <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
+          A quiet sequence of dishes, paced for an unhurried evening.
+        </p>
       </motion.div>
 
-      {/* Savings Banner */}
+      {/* Savings — refined inline note */}
       {totalSavings > 0 && (
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1 }}
-          className="flex items-center justify-center gap-2 bg-secondary/10 border border-secondary/20 rounded-xl px-4 py-2.5"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className="flex items-center gap-3 border-t border-b border-border/60 py-4"
         >
-          <Wallet className="w-4 h-4 text-menu-savings" />
-          <span className="text-sm font-semibold text-menu-savings">
-            Saved ~${totalSavings} using your pantry
+          <Wallet className="w-3.5 h-3.5 text-menu-savings" />
+          <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            Pantry saving
+          </span>
+          <span className="ml-auto font-display text-base text-foreground">
+            ~${totalSavings}
           </span>
         </motion.div>
       )}
 
-      {/* Loading indicator for videos */}
+      {/* Loading */}
       {videosLoading && (
-        <div className="flex items-center justify-center gap-2 text-muted-foreground py-1">
+        <div className="flex items-center gap-2 text-muted-foreground">
           <Loader2 className="w-3 h-3 animate-spin" />
-          <span className="text-xs">Finding recipe videos…</span>
+          <span className="text-[11px] uppercase tracking-[0.2em]">Curating references</span>
         </div>
       )}
 
-      {/* Timeline Cards */}
+      {/* Timeline */}
       <div className="space-y-0">
         {sortedDishes.map((dish, i) => {
           const video = getVideoForDish(dish.dish);

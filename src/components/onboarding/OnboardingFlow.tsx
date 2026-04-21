@@ -112,14 +112,17 @@ const OnboardingFlow = ({ onComplete }: Props) => {
 
   if (generating) {
     return (
-      <div className="min-h-screen bg-background/95 backdrop-blur-sm flex flex-col items-center justify-center gap-6">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-8 px-6">
         <motion.div
           animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+          transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
         >
-          <Loader2 className="w-10 h-10 text-primary" />
+          <Loader2 className="w-6 h-6 text-foreground/70" strokeWidth={1.5} />
         </motion.div>
-        <p className="text-muted-foreground font-medium">Crafting your perfect menu…</p>
+        <div className="text-center space-y-2">
+          <p className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground">Composing</p>
+          <p className="font-display text-2xl text-foreground">Your evening, taking shape.</p>
+        </div>
       </div>
     );
   }
@@ -133,30 +136,35 @@ const OnboardingFlow = ({ onComplete }: Props) => {
   ];
 
   return (
-    <div className="min-h-screen bg-background/95 backdrop-blur-sm flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* TOP — Progress */}
-      <div className="pt-8 pb-4 px-6 max-w-xl mx-auto w-full">
-        <p className="text-sm text-muted-foreground font-medium mb-3">
-          Step {currentStep + 1} of {TOTAL_STEPS}
-        </p>
-        <div className="w-full h-1 bg-muted rounded-full overflow-hidden">
+      <div className="pt-10 pb-6 px-6 md:px-10 max-w-2xl mx-auto w-full">
+        <div className="flex items-baseline justify-between mb-4">
+          <p className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground">
+            {stepLabels[currentStep]}
+          </p>
+          <p className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground tabular-nums">
+            {String(currentStep + 1).padStart(2, "0")} / {String(TOTAL_STEPS).padStart(2, "0")}
+          </p>
+        </div>
+        <div className="w-full h-px bg-border relative overflow-hidden">
           <motion.div
-            className="h-full bg-primary rounded-full"
+            className="absolute inset-y-0 left-0 bg-foreground"
             initial={false}
             animate={{ width: `${((currentStep + 1) / TOTAL_STEPS) * 100}%` }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           />
         </div>
         {summaryParts.length > 0 && currentStep > 0 && (
-          <p className="text-xs text-muted-foreground mt-3">
-            {summaryParts.join(" • ")}
+          <p className="text-[11px] text-muted-foreground mt-4 italic">
+            {summaryParts.join(" · ")}
           </p>
         )}
       </div>
 
       {/* CENTER — Step Content */}
-      <div className="flex-1 flex items-center justify-center px-6">
-        <div className="max-w-xl w-full">
+      <div className="flex-1 flex items-center justify-center px-6 md:px-10 py-8">
+        <div className="max-w-2xl w-full">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={currentStep}
@@ -165,7 +173,7 @@ const OnboardingFlow = ({ onComplete }: Props) => {
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.25, ease: "easeInOut" }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             >
               {stepContent[currentStep]}
             </motion.div>
@@ -174,22 +182,22 @@ const OnboardingFlow = ({ onComplete }: Props) => {
       </div>
 
       {/* BOTTOM — Navigation */}
-      <div className="pb-8 pt-4 px-6 max-w-xl mx-auto w-full flex items-center justify-between">
+      <div className="pb-10 pt-6 px-6 md:px-10 max-w-2xl mx-auto w-full flex items-center justify-between">
         <button
           onClick={goBack}
           disabled={currentStep === 0}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-0 disabled:pointer-events-none font-medium text-sm"
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-0 disabled:pointer-events-none text-[11px] uppercase tracking-[0.22em]"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-3.5 h-3.5" />
           Back
         </button>
         <button
           onClick={goNext}
           disabled={!canProceed()}
-          className="flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-xl font-bold text-sm disabled:opacity-40 transition-all hover:shadow-lg disabled:hover:shadow-none"
+          className="group flex items-center gap-3 border border-foreground text-foreground px-8 py-3.5 text-[11px] uppercase tracking-[0.22em] disabled:opacity-30 disabled:border-muted-foreground transition-all hover:bg-foreground hover:text-background"
         >
-          {currentStep === TOTAL_STEPS - 1 ? "Generate Menu" : "Next"}
-          <ArrowRight className="w-4 h-4" />
+          {currentStep === TOTAL_STEPS - 1 ? "Compose menu" : "Continue"}
+          <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
         </button>
       </div>
     </div>
