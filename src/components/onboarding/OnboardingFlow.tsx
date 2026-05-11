@@ -147,9 +147,9 @@ const OnboardingFlow = ({ onComplete }: Props) => {
             {String(currentStep + 1).padStart(2, "0")} / {String(TOTAL_STEPS).padStart(2, "0")}
           </p>
         </div>
-        <div className="w-full h-px bg-border relative overflow-hidden">
+        <div className="w-full h-1.5 bg-muted rounded-full relative overflow-hidden">
           <motion.div
-            className="absolute inset-y-0 left-0 bg-foreground"
+            className="absolute inset-y-0 left-0 bg-primary rounded-full"
             initial={false}
             animate={{ width: `${((currentStep + 1) / TOTAL_STEPS) * 100}%` }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
@@ -194,7 +194,7 @@ const OnboardingFlow = ({ onComplete }: Props) => {
         <button
           onClick={goNext}
           disabled={!canProceed()}
-          className="group flex items-center gap-3 border border-foreground text-foreground px-8 py-3.5 text-[11px] uppercase tracking-[0.22em] disabled:opacity-30 disabled:border-muted-foreground transition-all hover:bg-foreground hover:text-background"
+          className="group flex items-center gap-3 rounded-full bg-primary text-primary-foreground px-8 py-3.5 text-[11px] uppercase tracking-[0.22em] disabled:opacity-30 transition-all hover:bg-primary/90 shadow-[0_10px_28px_-12px_hsl(var(--primary)/0.5)] hover:-translate-y-0.5"
         >
           {currentStep === TOTAL_STEPS - 1 ? "Compose menu" : "Continue"}
           <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
