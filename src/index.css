@@ -6,66 +6,66 @@
 
 @layer base {
   :root {
-    /* Warm ivory canvas, editorial neutrals */
-    --background: 38 32% 95%;
-    --foreground: 25 14% 16%;
+    /* Warm hosting canvas — cream, butter, sage, peach */
+    --background: 42 48% 96%;
+    --foreground: 25 22% 20%;
 
-    --card: 36 30% 97%;
-    --card-foreground: 25 14% 16%;
+    --card: 40 50% 98%;
+    --card-foreground: 25 22% 20%;
 
-    --popover: 36 30% 97%;
-    --popover-foreground: 25 14% 16%;
+    --popover: 40 50% 98%;
+    --popover-foreground: 25 22% 20%;
 
-    /* Muted sage as primary */
-    --primary: 95 14% 38%;
-    --primary-foreground: 38 32% 96%;
+    /* Fresh sage as primary — brighter, friendlier */
+    --primary: 142 32% 44%;
+    --primary-foreground: 42 48% 97%;
 
-    /* Olive secondary */
-    --secondary: 75 16% 42%;
-    --secondary-foreground: 38 32% 96%;
+    /* Butter yellow secondary */
+    --secondary: 42 88% 70%;
+    --secondary-foreground: 25 30% 22%;
 
-    --muted: 36 18% 90%;
-    --muted-foreground: 28 8% 42%;
+    --muted: 38 30% 92%;
+    --muted-foreground: 25 12% 42%;
 
-    /* Terracotta accent */
-    --accent: 16 42% 54%;
-    --accent-foreground: 38 32% 96%;
+    /* Warm peach accent */
+    --accent: 18 78% 68%;
+    --accent-foreground: 25 30% 18%;
 
-    --destructive: 8 52% 48%;
-    --destructive-foreground: 38 32% 96%;
+    --destructive: 8 62% 56%;
+    --destructive-foreground: 42 48% 97%;
 
-    --border: 32 16% 84%;
-    --input: 32 16% 84%;
-    --ring: 95 14% 38%;
+    --border: 36 26% 86%;
+    --input: 36 26% 86%;
+    --ring: 142 32% 44%;
 
     --radius: 0.25rem;
 
-    --poko: 95 14% 38%;
-    --poko-light: 95 14% 92%;
-    --poko-bubble: 36 22% 92%;
+    --poko: 142 32% 44%;
+    --poko-light: 142 32% 92%;
+    --poko-bubble: 42 60% 94%;
 
-    --menu-accent: 75 16% 42%;
-    --menu-accent-light: 75 16% 92%;
-    --menu-accent-foreground: 75 22% 26%;
-    --menu-card: 38 28% 97%;
-    --menu-border: 32 14% 86%;
-    --menu-tag: 36 18% 92%;
-    --menu-savings: 16 42% 48%;
-    --menu-course-label: 25 14% 22%;
+    --menu-accent: 142 32% 44%;
+    --menu-accent-light: 142 38% 90%;
+    --menu-accent-foreground: 142 28% 24%;
+    --menu-card: 40 50% 98%;
+    --menu-border: 36 26% 88%;
+    --menu-tag: 42 60% 94%;
+    --menu-savings: 18 72% 48%;
+    --menu-course-label: 25 22% 22%;
 
-    --mic-teal: 95 14% 38%;
-    --mic-teal-foreground: 38 32% 96%;
+    --mic-teal: 142 32% 44%;
+    --mic-teal-foreground: 42 48% 97%;
 
-    /* Joyful food-inspired accents */
-    --citrus: 38 78% 58%;
-    --citrus-soft: 42 70% 88%;
-    --berry: 348 52% 52%;
-    --berry-soft: 348 48% 92%;
-    --terracotta-soft: 16 52% 90%;
-    --sage-soft: 95 22% 88%;
-    --cream: 36 44% 96%;
-    --cream-warm: 32 38% 93%;
-    --shadow-warm: 24 30% 30%;
+    /* Joyful hosting accents — butter, peach, coral, sage */
+    --citrus: 42 92% 62%;
+    --citrus-soft: 44 90% 88%;
+    --berry: 8 76% 64%;
+    --berry-soft: 10 80% 92%;
+    --terracotta-soft: 18 80% 90%;
+    --sage-soft: 142 36% 88%;
+    --cream: 40 60% 97%;
+    --cream-warm: 36 56% 94%;
+    --shadow-warm: 24 40% 28%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
