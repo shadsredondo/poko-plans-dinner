@@ -41,7 +41,10 @@ const RULES = `Rules:
 - Avoid overlapping multiple "high" effort dishes unless necessary
 - Keep "reason" concise (no full sentences, max 3-5 words)
 - Prefer pantry ingredients from what the user listed
-- Limit to 3-4 dishes max
+- Number of dishes is DETERMINED BY EFFORT LEVEL (strict, no exceptions):
+  - effort = "minimal" (Unhurried / low): EXACTLY 3 dishes
+  - effort = "moderate" (Considered / medium): EXACTLY 4 or 5 dishes (pick 4 unless guest count > 6 or pantry is very rich, then 5)
+  - effort = "high" (Devoted): AT LEAST 6 dishes (6-7 is ideal)
 - ALL dishes must fit within the given time limit — no dish's start_time_minutes can exceed it
 - start_time_minutes = minutes before serving (e.g. 90 for "1 hour 30 min before")
 - Adapt complexity based on cooking skill:
@@ -50,9 +53,16 @@ const RULES = `Rules:
   - Advanced: creative, multi-step elements
 
 Savings rules:
-- savings = estimated dollar amount saved per dish by using pantry ingredients
-- If a dish uses ANY pantry ingredients, savings MUST be > 0 (estimate directionally, e.g. chicken=$3, rice=$1, tomatoes=$2, yogurt=$1)
-- total_savings = sum of all dish savings, must reflect actual pantry usage across dishes
+- savings = realistic US grocery dollar amount saved per dish by using pantry ingredients INSTEAD of buying them fresh
+- Use realistic 2025 US retail prices, scaled by guest count. Reference per-unit prices (for the WHOLE dish serving the party, not per person):
+  - Proteins: chicken breast ~$4-7/lb, ground beef ~$6/lb, salmon ~$10-14/lb, shrimp ~$10/lb, eggs ~$0.40 each
+  - Dairy: butter ~$5/lb, cheese ~$5-8/block, yogurt ~$4/tub, milk ~$1/cup
+  - Produce: onion ~$1, garlic ~$1, tomatoes ~$2-3, lemons ~$0.75, fresh herbs ~$2-3/bunch, leafy greens ~$3/bag, bell peppers ~$1.50
+  - Pantry staples: rice ~$2/lb, pasta ~$2/box, flour ~$1/lb, olive oil ~$2 worth per dish, spices ~$1-2 each, canned goods ~$2 each, beans ~$2/can
+- Multiply realistically: a dish using chicken + rice + onion + garlic + spices for 6 guests easily saves $15-25, not $3
+- If a dish uses MANY pantry ingredients (5+), savings should typically be $15+ per dish
+- total_savings = sum of all dish savings — for a full menu drawing heavily from a stocked pantry, expect $40-150+ total, NOT under $20
+- Be generous but realistic — under-counting savings frustrates the user
 - Never return savings: 0 if pantry ingredients are used in a dish
 
 Action rules:
