@@ -79,32 +79,32 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
         transition={{ duration: 0.6 }}
         className="space-y-3"
       >
-        <p className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground">
-          The Evening · Plan
-        </p>
+        <span className="inline-flex items-center gap-2 rounded-full bg-secondary/50 px-3 py-1 text-[10px] uppercase tracking-[0.28em] text-secondary-foreground">
+          <Sparkles className="w-3 h-3" /> Tonight&rsquo;s plan
+        </span>
         <h2 className="font-display text-3xl md:text-4xl font-normal text-foreground leading-[1.1]">
           Your hosting timeline
         </h2>
         <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
-          A quiet sequence of dishes, paced for an unhurried evening.
+          A calm evening flow — paced so you can pour the wine, not panic.
         </p>
       </motion.div>
 
-      {/* Savings — refined inline note */}
+      {/* Savings — friendly chip card */}
       {totalSavings > 0 && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.5 }}
-          className="flex items-center gap-3 border-t border-b border-border/60 py-4"
+          className="flex items-center gap-3 rounded-2xl bg-sage-soft/60 border border-primary/15 px-5 py-4"
         >
-          <Wallet className="w-3.5 h-3.5 text-menu-savings" />
-          <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-            Pantry saving
+          <div className="w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center">
+            <Wallet className="w-4 h-4 text-primary" />
+          </div>
+          <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+            Saved from your pantry
           </span>
-          <span className="ml-auto font-display text-base text-foreground">
-            ~${totalSavings}
-          </span>
+          <span className="ml-auto font-display text-xl text-foreground">~${totalSavings}</span>
         </motion.div>
       )}
 

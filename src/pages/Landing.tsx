@@ -65,7 +65,7 @@ const Landing = () => {
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 pt-2">
                 <button
                   onClick={() => navigate("/new")}
-                  className="group inline-flex items-center gap-3 rounded-full bg-foreground text-background px-8 py-4 text-xs uppercase tracking-[0.22em] hover:bg-primary transition-all duration-300 shadow-[0_10px_30px_-12px_hsl(var(--shadow-warm)/0.45)] hover:shadow-[0_14px_36px_-10px_hsl(var(--primary)/0.45)] hover:-translate-y-0.5"
+                  className="group inline-flex items-center gap-3 rounded-full bg-primary text-primary-foreground px-8 py-4 text-xs uppercase tracking-[0.22em] hover:bg-primary/90 transition-all duration-300 shadow-[0_12px_32px_-10px_hsl(var(--primary)/0.5)] hover:shadow-[0_18px_40px_-10px_hsl(var(--primary)/0.55)] hover:-translate-y-0.5"
                 >
                   Plan tonight&rsquo;s dinner
                   <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
@@ -202,7 +202,7 @@ const Landing = () => {
                 </p>
                 <button
                   onClick={() => navigate("/new")}
-                  className="group inline-flex items-center gap-3 rounded-full bg-foreground text-background px-10 py-4 text-xs uppercase tracking-[0.22em] hover:bg-primary transition-all duration-300 shadow-[0_14px_36px_-12px_hsl(var(--shadow-warm)/0.5)] hover:-translate-y-0.5"
+                  className="group inline-flex items-center gap-3 rounded-full bg-primary text-primary-foreground px-10 py-4 text-xs uppercase tracking-[0.22em] hover:bg-primary/90 transition-all duration-300 shadow-[0_14px_36px_-12px_hsl(var(--primary)/0.55)] hover:-translate-y-0.5"
                 >
                   Plan an evening
                   <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
