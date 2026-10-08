@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Citrus, Soup, Salad, Wine, Flame, Sparkles } from "lucide-react";
 import PokoAvatar from "@/components/PokoAvatar";
 import AccountMenu from "@/components/AccountMenu";
@@ -216,7 +216,10 @@ const Landing = () => {
       <footer className="relative px-6 md:px-10 py-8 border-t border-border/40">
         <div className="max-w-7xl mx-auto flex items-center justify-between text-[10px] uppercase tracking-[0.32em] text-muted-foreground">
           <span className="flex items-center gap-2"><Sparkles className="w-3 h-3 text-citrus" strokeWidth={2} />Poko</span>
-          <span>Made for people who love hosting</span>
+          <nav className="flex items-center gap-6">
+            <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
+            <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
+          </nav>
         </div>
       </footer>
     </div>

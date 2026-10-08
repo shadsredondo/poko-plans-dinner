@@ -260,6 +260,12 @@ const SaveMenuNudge = ({ menu, guests, ingredients, effort, skill, cuisine }: Sa
                 {isSignUp ? "Sign in" : "Sign up"}
               </button>
             </p>
+
+            <p className="text-center text-[11px] text-muted-foreground">
+              By continuing you agree to our{" "}
+              <a href="/terms" target="_blank" rel="noopener" className="underline underline-offset-2">Terms</a> and{" "}
+              <a href="/privacy" target="_blank" rel="noopener" className="underline underline-offset-2">Privacy Policy</a>.
+            </p>
           </div>
         </DialogContent>
       </Dialog>

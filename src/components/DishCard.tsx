@@ -188,7 +188,7 @@ const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
             </DialogHeader>
             <div className="aspect-video w-full">
               <iframe
-                src={`https://www.youtube.com/embed/${video.videoId}?rel=0`}
+                src={`https://www.youtube-nocookie.com/embed/${video.videoId}?rel=0`}
                 title={video.title}
                 allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
