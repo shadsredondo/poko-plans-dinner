@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { signInWithGoogle } from "@/lib/auth";
 
 const ReturningUserBanner = () => {
   const [show, setShow] = useState(false);
@@ -32,12 +33,9 @@ const ReturningUserBanner = () => {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      const { lovable } = await import("@/integrations/lovable");
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
-      });
-      if (result?.error) {
-        toast({ title: "Something went wrong", description: String(result.error), variant: "destructive" });
+      const { error } = await signInWithGoogle();
+      if (error) {
+        toast({ title: "Something went wrong", description: error.message, variant: "destructive" });
       }
     } catch (err: any) {
       toast({ title: "Something went wrong", description: err?.message || "Google sign-in failed", variant: "destructive" });

@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSavedMenus } from "@/hooks/useSavedMenus";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { signInWithGoogle, PENDING_MENU_KEY } from "@/lib/auth";
 
 interface SaveMenuNudgeProps {
   menu?: any;
@@ -17,8 +18,6 @@ interface SaveMenuNudgeProps {
   skill?: string;
   cuisine?: string;
 }
-
-const PENDING_MENU_KEY = "poko_pending_menu";
 
 const SaveMenuNudge = ({ menu, guests, ingredients, effort, skill, cuisine }: SaveMenuNudgeProps) => {
   const [open, setOpen] = useState(false);
@@ -114,12 +113,11 @@ const SaveMenuNudge = ({ menu, guests, ingredients, effort, skill, cuisine }: Sa
       if (menu) {
         sessionStorage.setItem(PENDING_MENU_KEY, JSON.stringify(buildPayload()));
       }
-      const { lovable } = await import("@/integrations/lovable");
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
-      });
-      if (result?.error) {
-        toast({ title: "Something went wrong", description: String(result.error), variant: "destructive" });
+      // The menu isn't restored on /new after a reload, so land on /menus,
+      // which saves the pending menu.
+      const { error } = await signInWithGoogle("/menus");
+      if (error) {
+        toast({ title: "Something went wrong", description: error.message, variant: "destructive" });
       }
     } catch (err: any) {
       toast({ title: "Something went wrong", description: err?.message || "Google sign-in failed", variant: "destructive" });

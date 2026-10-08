@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChefHat, Wallet, Clock, RotateCcw, Trash2, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +8,7 @@ import PokoAvatar from "@/components/PokoAvatar";
 import AccountMenu from "@/components/AccountMenu";
 import MenuResults from "@/components/MenuResults";
 import { useToast } from "@/hooks/use-toast";
+import { PENDING_MENU_KEY } from "@/lib/auth";
 
 function timeAgo(dateStr: string): string {
   const now = new Date();
@@ -24,10 +25,28 @@ function timeAgo(dateStr: string): string {
 
 const SavedMenus = () => {
   const { user } = useAuth();
-  const { data: menus, isLoading, deleteMenu } = useSavedMenus(user?.id);
+  const { data: menus, isLoading, deleteMenu, saveMenu } = useSavedMenus(user?.id);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const pendingSavedRef = useRef(false);
+
+  // Save a menu the user picked before signing in with Google (set by SaveMenuNudge).
+  useEffect(() => {
+    if (!user || pendingSavedRef.current) return;
+    const pending = sessionStorage.getItem(PENDING_MENU_KEY);
+    if (!pending) return;
+    pendingSavedRef.current = true;
+    sessionStorage.removeItem(PENDING_MENU_KEY);
+    try {
+      saveMenu
+        .mutateAsync(JSON.parse(pending))
+        .then(() => toast({ title: "Saved to your menus 🎉" }))
+        .catch((err: Error) => toast({ title: "Failed to save", description: err.message, variant: "destructive" }));
+    } catch {
+      // Malformed payload; nothing to save.
+    }
+  }, [user]);
 
   const expandedMenu = menus?.find((m) => m.id === expandedId);
 
