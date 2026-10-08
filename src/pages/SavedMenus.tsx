@@ -9,6 +9,7 @@ import AccountMenu from "@/components/AccountMenu";
 import MenuResults from "@/components/MenuResults";
 import { useToast } from "@/hooks/use-toast";
 import { PENDING_MENU_KEY } from "@/lib/auth";
+import GoogleSignInButton from "@/components/GoogleSignInButton";
 
 function timeAgo(dateStr: string): string {
   const now = new Date();
@@ -24,7 +25,7 @@ function timeAgo(dateStr: string): string {
 }
 
 const SavedMenus = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { data: menus, isLoading, deleteMenu, saveMenu } = useSavedMenus(user?.id);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -145,7 +146,24 @@ const SavedMenus = () => {
           Design new menu
         </motion.button>
 
-        {isLoading ? (
+        {!authLoading && !user ? (
+          /* Signed out */
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col items-center text-center pt-12 space-y-5"
+          >
+            <div className="space-y-1.5">
+              <p className="font-display font-bold text-foreground text-lg">Sign in to see your menus</p>
+              <p className="text-sm text-muted-foreground max-w-[260px]">
+                Menus you save are kept with your account.
+              </p>
+            </div>
+            <div className="w-full max-w-[320px]">
+              <GoogleSignInButton redirectPath="/menus" />
+            </div>
+          </motion.div>
+        ) : authLoading || isLoading ? (
           <div className="flex justify-center py-16">
             <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
@@ -180,8 +198,8 @@ const SavedMenus = () => {
           /* Menu cards */
           <div className="space-y-3">
             {menus.map((menu, i) => {
-              const courses = menu.menu_data?.courses || [];
-              const dishPreview = courses.slice(0, 3).map((c: any) => c.name);
+              const dishes: { dish: string }[] = menu.menu_data?.menu || [];
+              const dishPreview = dishes.slice(0, 3).map((d) => d.dish);
 
               return (
                 <motion.button
