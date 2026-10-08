@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -107,6 +108,62 @@ ${SCHEMA}
 
 ${RULES}`;
 
+// --- Abuse protection -------------------------------------------------------
+
+const HOUR = 3600;
+const DAY = 86400;
+// Per visitor (IP) or per signed-in user, plus an app-wide daily cap on AI spend.
+const LIMITS = {
+  anon: { hour: 5, day: 15 },
+  user: { hour: 10, day: 30 },
+  globalDay: 300,
+};
+
+const supabaseAdmin = createClient(
+  Deno.env.get("SUPABASE_URL")!,
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+);
+
+const clientIp = (req: Request) =>
+  req.headers.get("cf-connecting-ip") ??
+  req.headers.get("x-real-ip") ??
+  req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
+  "unknown";
+
+// The signed-in user's id, or null for anonymous requests (anon key).
+const userIdFrom = async (req: Request) => {
+  const token = req.headers.get("Authorization")?.replace(/^Bearer\s+/i, "");
+  if (!token) return null;
+  const { data } = await supabaseAdmin.auth.getUser(token);
+  return data.user?.id ?? null;
+};
+
+// Counts a hit against each [key, limit, windowSeconds]; false once any is exceeded.
+// Fails open so a limiter outage doesn't take the app down.
+const withinLimits = async (limits: [string, number, number][]) => {
+  for (const [key, limit, windowSeconds] of limits) {
+    const { data, error } = await supabaseAdmin.rpc("hit_rate_limit", {
+      p_key: key,
+      p_limit: limit,
+      p_window_seconds: windowSeconds,
+    });
+    if (error) {
+      console.error("Rate limit check failed:", error.message);
+      return true;
+    }
+    if (data === false) return false;
+  }
+  return true;
+};
+
+const isShortString = (v: unknown, max: number) => typeof v === "string" && v.length <= max;
+const isOptionalShortString = (v: unknown, max: number) => v == null || isShortString(v, max);
+
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status, headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -117,6 +174,29 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
+
+    const valid =
+      Number.isInteger(guests) && guests >= 1 && guests <= 20 &&
+      isShortString(ingredients, 500) &&
+      isOptionalShortString(effort, 60) &&
+      isOptionalShortString(skill, 60) &&
+      isOptionalShortString(cuisine, 60) &&
+      isOptionalShortString(time_limit, 40) &&
+      isOptionalShortString(modification, 300) &&
+      (current_plan == null || JSON.stringify(current_plan).length <= 20000);
+    if (!valid) return json({ error: "That request looks a little off. Please try again." }, 400);
+
+    const userId = await userIdFrom(req);
+    const who = userId ? `user:${userId}` : `ip:${clientIp(req)}`;
+    const tier = userId ? LIMITS.user : LIMITS.anon;
+    const allowed = await withinLimits([
+      [`menu:${who}:hour`, tier.hour, HOUR],
+      [`menu:${who}:day`, tier.day, DAY],
+      ["menu:global:day", LIMITS.globalDay, DAY],
+    ]);
+    if (!allowed) {
+      return json({ error: "Poko needs a breather after all that planning. Please try again a bit later." }, 429);
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");

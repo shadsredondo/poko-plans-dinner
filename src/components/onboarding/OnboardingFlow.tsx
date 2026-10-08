@@ -75,7 +75,11 @@ const OnboardingFlow = ({ onComplete }: Props) => {
             cuisine: cuisineVal,
           },
         });
-        if (error) throw error;
+        if (error) {
+          // Non-2xx responses (e.g. rate limited) carry a friendly message in the body.
+          const body = await error.context?.json?.().catch(() => null);
+          throw new Error(body?.error || error.message);
+        }
         if (menuData?.error) throw new Error(menuData.error);
         onComplete(menuData, data);
       } catch (err: any) {
