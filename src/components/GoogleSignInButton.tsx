@@ -71,7 +71,6 @@ const GoogleSignInButton = ({ redirectPath = "/", onBeforeRedirect }: GoogleSign
         window.google.accounts.id.initialize({
           client_id: GOOGLE_CLIENT_ID,
           nonce: hashed,
-          use_fedcm_for_button: true,
           callback: async ({ credential }: { credential: string }) => {
             const { error } = await supabase.auth.signInWithIdToken({
               provider: "google",
