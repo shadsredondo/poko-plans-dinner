@@ -6,7 +6,7 @@ interface Props {
 }
 
 const presets = [
-  { label: "Italian", region: "Trattoria" },
+  { label: "Italian", region: "Mediterranean" },
   { label: "Indian", region: "Subcontinental" },
   { label: "Asian fusion", region: "Pan-Asian" },
   { label: "Mediterranean", region: "Coastal" },

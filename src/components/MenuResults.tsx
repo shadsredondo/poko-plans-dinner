@@ -87,7 +87,7 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
             Your hosting timeline
           </h2>
           <p className="text-[13px] text-muted-foreground mt-1 leading-relaxed">
-            Start each dish at the time shown,<br className="hidden md:inline" /> counted back from when you sit down to eat.
+            A relaxed sequence of dishes,<br className="hidden md:inline" /> paced for a stress-free evening.
           </p>
         </div>
 
