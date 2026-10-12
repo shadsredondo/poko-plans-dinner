@@ -31,7 +31,7 @@ const Privacy = () => (
       <ul className="list-disc pl-5 space-y-2">
         <li><strong className="text-foreground">Supabase</strong> stores accounts and saved menus.</li>
         <li>
-          <strong className="text-foreground">Lovable AI gateway and Google Gemini</strong> receive your planning
+          <strong className="text-foreground">Google Gemini</strong> receives your planning
           answers to generate the menu. Don't include personal details in the ingredients field.
         </li>
         <li>
