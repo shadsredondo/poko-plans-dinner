@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Play, ChevronDown, Soup, Salad, Cake, Wine, UtensilsCrossed } from "lucide-react";
+import { Play, ChevronDown, Loader2, Soup, Salad, Cake, Wine, UtensilsCrossed } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -70,6 +70,7 @@ function formatBefore(mins?: number): { top: string; bottom: string } {
 
 const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
   const [videoOpen, setVideoOpen] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
   const cat = categoryStyles[dish.category] || categoryStyles.main;
@@ -143,7 +144,7 @@ const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
           >
             <ChevronDown className={`w-4 h-4 transition-transform ${expanded ? "rotate-180" : ""}`} />
           </button>
-          <div className="w-16 text-right">
+          <div className="w-16 text-right" title="Estimated savings from using what you already have">
             {dish.savings > 0 ? (
               <span className="text-[15px] font-medium text-berry">– ${dish.savings}</span>
             ) : (
@@ -181,18 +182,38 @@ const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
 
       {/* Video Modal */}
       {video && (
-        <Dialog open={videoOpen} onOpenChange={setVideoOpen}>
-          <DialogContent className="sm:max-w-2xl p-0 overflow-hidden border-border">
+        <Dialog
+          open={videoOpen}
+          onOpenChange={(open) => {
+            setVideoOpen(open);
+            if (!open) setVideoLoaded(false);
+          }}
+        >
+          <DialogContent
+            className="sm:max-w-2xl p-0 overflow-hidden border-border"
+            // Keep focus out of the YouTube iframe so Escape closes the dialog.
+            onOpenAutoFocus={(e) => {
+              e.preventDefault();
+              (e.currentTarget as HTMLElement).focus();
+            }}
+          >
             <DialogHeader className="px-6 pt-6 pb-3">
               <DialogTitle className="font-display text-xl font-normal truncate">{dish.dish}</DialogTitle>
             </DialogHeader>
-            <div className="aspect-video w-full">
+            <div className="aspect-video w-full relative bg-muted">
+              {!videoLoaded && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-muted-foreground">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span className="text-[11px] uppercase tracking-[0.22em]">Loading video</span>
+                </div>
+              )}
               <iframe
+                onLoad={() => setVideoLoaded(true)}
                 src={`https://www.youtube-nocookie.com/embed/${video.videoId}?rel=0`}
                 title={video.title}
                 allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
-                className="w-full h-full border-0"
+                className={`relative w-full h-full border-0 transition-opacity ${videoLoaded ? "opacity-100" : "opacity-0"}`}
               />
             </div>
           </DialogContent>

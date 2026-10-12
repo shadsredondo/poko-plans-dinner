@@ -6,7 +6,7 @@ interface Props {
 }
 
 const presets = [
-  { label: "Italian", region: "Mediterranean" },
+  { label: "Italian", region: "Trattoria" },
   { label: "Indian", region: "Subcontinental" },
   { label: "Asian fusion", region: "Pan-Asian" },
   { label: "Mediterranean", region: "Coastal" },
@@ -26,6 +26,7 @@ const StepCuisine = ({ value, customValue, onChange, onCustomChange }: Props) =>
         <button
           key={opt.label}
           onClick={() => onChange(opt.label)}
+          aria-pressed={value === opt.label}
           className={`text-left px-6 py-6 transition-colors duration-300 ${
             value === opt.label
               ? "bg-foreground text-background"
@@ -42,6 +43,7 @@ const StepCuisine = ({ value, customValue, onChange, onCustomChange }: Props) =>
       ))}
       <button
         onClick={() => onChange("custom")}
+        aria-pressed={value === "custom"}
         className={`text-left px-6 py-6 sm:col-span-2 transition-colors duration-300 ${
           value === "custom"
             ? "bg-foreground text-background"

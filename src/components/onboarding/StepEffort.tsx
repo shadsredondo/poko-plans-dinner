@@ -22,6 +22,7 @@ const StepEffort = ({ value, onChange }: Props) => (
         <button
           key={opt.value}
           onClick={() => onChange(opt.value)}
+          aria-pressed={value === opt.value}
           className={`w-full text-left flex items-baseline justify-between gap-6 py-6 border-b border-border transition-colors group ${
             value === opt.value ? "bg-muted/50" : "hover:bg-muted/30"
           }`}
@@ -34,7 +35,7 @@ const StepEffort = ({ value, onChange }: Props) => (
             </span>
             <span className="text-sm text-muted-foreground italic">{opt.desc}</span>
           </div>
-          <span className={`text-[10px] uppercase tracking-[0.24em] pr-2 transition-opacity ${
+          <span aria-hidden className={`text-[10px] uppercase tracking-[0.24em] pr-2 transition-opacity ${
             value === opt.value ? "opacity-100 text-foreground" : "opacity-0"
           }`}>
             Selected

@@ -78,14 +78,14 @@ const OnboardingFlow = ({ onComplete }: Props) => {
         if (error) {
           // Non-2xx responses (e.g. rate limited) carry a friendly message in the body.
           const body = await error.context?.json?.().catch(() => null);
-          throw new Error(body?.error || error.message);
+          throw Object.assign(new Error(body?.error || error.message), { status: error.context?.status });
         }
         if (menuData?.error) throw new Error(menuData.error);
         onComplete(menuData, data);
       } catch (err: any) {
         console.error("Menu generation failed:", err);
         toast({
-          title: "Something went wrong 😅",
+          title: err.status === 429 ? "Taking a short break" : "Something went wrong 😅",
           description: err.message || "Let's try again!",
           variant: "destructive",
         });

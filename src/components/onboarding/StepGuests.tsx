@@ -18,6 +18,7 @@ const StepGuests = ({ value, onChange }: Props) => (
         <button
           key={n}
           onClick={() => onChange(n)}
+          aria-pressed={value === n}
           className={`aspect-square flex items-center justify-center font-display text-3xl transition-colors duration-300 ${
             value === n
               ? "bg-foreground text-background"

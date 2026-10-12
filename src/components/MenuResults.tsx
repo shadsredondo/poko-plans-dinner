@@ -87,7 +87,7 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
             Your hosting timeline
           </h2>
           <p className="text-[13px] text-muted-foreground mt-1 leading-relaxed">
-            A relaxed sequence of dishes,<br className="hidden md:inline" /> paced for a stress-free evening.
+            Start each dish at the time shown,<br className="hidden md:inline" /> counted back from when you sit down to eat.
           </p>
         </div>
 
@@ -97,7 +97,7 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
               <PiggyBank className="w-4 h-4 text-secondary-foreground" strokeWidth={1.75} />
             </span>
             <div className="leading-tight">
-              <div className="text-[9px] font-semibold tracking-[0.22em] text-secondary-foreground/80">PANTRY SAVINGS</div>
+              <div className="text-[9px] font-semibold tracking-[0.22em] text-secondary-foreground/80">EST. PANTRY SAVINGS</div>
               <div className="font-display text-lg text-foreground">~${totalSavings}</div>
             </div>
           </div>
