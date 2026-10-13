@@ -137,7 +137,7 @@ const StepIngredients = ({ value, onChange }: Props) => {
             </button>
           )}
           <button
-            onClick={addIngredient}
+            onClick={() => addIngredient()}
             disabled={!input.trim()}
             className="min-h-11 px-1 text-foreground text-[11px] uppercase tracking-[0.18em] disabled:opacity-30 transition-opacity hover:text-accent"
           >

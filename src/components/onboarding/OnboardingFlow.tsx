@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import StepGuests from "./StepGuests";
@@ -8,6 +8,7 @@ import StepIngredients from "./StepIngredients";
 import StepEffort from "./StepEffort";
 import StepCuisine from "./StepCuisine";
 import StepSkill from "./StepSkill";
+import CookingLoader from "@/components/CookingLoader";
 
 export interface OnboardingData {
   guests: number | null;
@@ -116,17 +117,8 @@ const OnboardingFlow = ({ onComplete }: Props) => {
 
   if (generating) {
     return (
-      <div className="min-h-[100dvh] bg-background flex flex-col items-center justify-center gap-8 px-5 [padding-bottom:max(1.25rem,env(safe-area-inset-bottom))]">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
-        >
-          <Loader2 className="w-6 h-6 text-foreground/70" strokeWidth={1.5} />
-        </motion.div>
-        <div className="text-center space-y-2">
-          <p className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground">Composing</p>
-          <p className="font-display text-2xl text-foreground">Your evening, taking shape.</p>
-        </div>
+      <div className="min-h-[100dvh] bg-background flex flex-col items-center justify-center px-5 py-8 [padding-bottom:max(2rem,env(safe-area-inset-bottom))]">
+        <CookingLoader />
       </div>
     );
   }
