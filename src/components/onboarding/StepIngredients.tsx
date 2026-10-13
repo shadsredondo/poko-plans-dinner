@@ -2,6 +2,7 @@ import { useState } from "react";
 import { X, Mic, Loader2 } from "lucide-react";
 import { useVoiceDictation } from "@/hooks/useVoiceDictation";
 import { motion, AnimatePresence } from "framer-motion";
+import { getIngredientSuggestions } from "@/lib/ingredientSuggestions";
 
 interface Props {
   value: string[];
@@ -10,18 +11,27 @@ interface Props {
 
 const StepIngredients = ({ value, onChange }: Props) => {
   const [input, setInput] = useState("");
+  const [activeSuggestion, setActiveSuggestion] = useState(0);
+
+  const suggestions = getIngredientSuggestions(input, value);
 
   const { state, isSupported, toggle } = useVoiceDictation((text) => {
     setInput(text);
   });
 
-  const addIngredient = () => {
-    const trimmed = input.trim();
+  const addIngredient = (ingredientInput = input) => {
+    const trimmed = ingredientInput.trim();
     if (!trimmed) return;
     const items = trimmed.split(",").map((s) => s.trim()).filter(Boolean);
     const unique = [...new Set([...value, ...items])];
     onChange(unique);
     setInput("");
+    setActiveSuggestion(0);
+  };
+
+  const chooseSuggestion = (suggestion: string) => {
+    const priorItems = input.split(",").slice(0, -1).map((item) => item.trim()).filter(Boolean);
+    addIngredient([...priorItems, suggestion].join(", "));
   };
 
   const remove = (item: string) => {
@@ -29,9 +39,25 @@ const StepIngredients = ({ value, onChange }: Props) => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowDown" && suggestions.length) {
+      e.preventDefault();
+      setActiveSuggestion((index) => (index + 1) % suggestions.length);
+      return;
+    }
+    if (e.key === "ArrowUp" && suggestions.length) {
+      e.preventDefault();
+      setActiveSuggestion((index) => (index - 1 + suggestions.length) % suggestions.length);
+      return;
+    }
+    if (e.key === "Escape" && suggestions.length) {
+      e.preventDefault();
+      setInput("");
+      return;
+    }
     if (e.key === "Enter") {
       e.preventDefault();
-      addIngredient();
+      if (suggestions.length) chooseSuggestion(suggestions[activeSuggestion] || suggestions[0]);
+      else addIngredient();
     }
   };
 
@@ -62,12 +88,22 @@ const StepIngredients = ({ value, onChange }: Props) => {
       </div>
 
       <div className="space-y-6">
-        <div className="flex gap-3 items-center border-b border-border focus-within:border-foreground transition-colors">
+        <div className="relative">
+          <div className="flex gap-3 items-center border-b border-border focus-within:border-foreground transition-colors">
           <input
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => {
+              setInput(e.target.value);
+              setActiveSuggestion(0);
+            }}
             onKeyDown={handleKeyDown}
             placeholder="chicken, tomatoes, garlic…"
+            role="combobox"
+            aria-label="Add pantry ingredients"
+            aria-autocomplete="list"
+            aria-expanded={suggestions.length > 0}
+            aria-controls="ingredient-suggestions"
+            aria-activedescendant={suggestions.length ? `ingredient-suggestion-${activeSuggestion}` : undefined}
             className="min-w-0 flex-1 bg-transparent border-0 px-0 py-3 font-display text-base sm:text-xl text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
           />
           {isSupported && (
@@ -107,6 +143,39 @@ const StepIngredients = ({ value, onChange }: Props) => {
           >
             Add
           </button>
+          </div>
+
+          <AnimatePresence>
+            {suggestions.length > 0 && (
+              <motion.div
+                id="ingredient-suggestions"
+                role="listbox"
+                aria-label="Ingredient suggestions"
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.15 }}
+                className="absolute inset-x-0 top-full z-20 mt-2 overflow-hidden rounded-2xl border border-border bg-card shadow-[0_18px_45px_-24px_hsl(var(--shadow-warm)/0.55)]"
+              >
+                {suggestions.map((suggestion, index) => (
+                  <button
+                    key={suggestion}
+                    id={`ingredient-suggestion-${index}`}
+                    role="option"
+                    aria-selected={index === activeSuggestion}
+                    onMouseDown={(event) => event.preventDefault()}
+                    onClick={() => chooseSuggestion(suggestion)}
+                    className={`flex min-h-11 w-full items-center justify-between px-4 py-2.5 text-left text-sm transition-colors ${
+                      index === activeSuggestion ? "bg-sage-soft/70 text-foreground" : "bg-card text-foreground/85 hover:bg-muted/60"
+                    }`}
+                  >
+                    <span className="font-medium">{suggestion}</span>
+                    <span className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground">Add</span>
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         <AnimatePresence mode="wait">
