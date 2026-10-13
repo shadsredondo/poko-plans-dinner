@@ -116,7 +116,7 @@ const OnboardingFlow = ({ onComplete }: Props) => {
 
   if (generating) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-8 px-6">
+      <div className="min-h-[100dvh] bg-background flex flex-col items-center justify-center gap-8 px-5 [padding-bottom:max(1.25rem,env(safe-area-inset-bottom))]">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
@@ -140,9 +140,9 @@ const OnboardingFlow = ({ onComplete }: Props) => {
   ];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-[100dvh] bg-background flex flex-col">
       {/* TOP — Progress */}
-      <div className="pt-10 pb-6 px-6 md:px-10 max-w-2xl mx-auto w-full">
+      <div className="[padding-top:max(1.5rem,env(safe-area-inset-top))] sm:pt-10 pb-4 sm:pb-6 px-5 sm:px-6 md:px-10 max-w-2xl mx-auto w-full">
         <div className="flex items-baseline justify-between mb-4">
           <p className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground">
             {stepLabels[currentStep]}
@@ -167,7 +167,7 @@ const OnboardingFlow = ({ onComplete }: Props) => {
       </div>
 
       {/* CENTER — Step Content */}
-      <div className="flex-1 flex items-center justify-center px-6 md:px-10 py-8">
+      <div className="flex-1 flex items-start sm:items-center justify-center px-5 sm:px-6 md:px-10 py-4 sm:py-8">
         <div className="max-w-2xl w-full">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
@@ -186,11 +186,11 @@ const OnboardingFlow = ({ onComplete }: Props) => {
       </div>
 
       {/* BOTTOM — Navigation */}
-      <div className="pb-10 pt-6 px-6 md:px-10 max-w-2xl mx-auto w-full flex items-center justify-between">
+      <div className="sticky bottom-0 z-10 [padding-bottom:max(1rem,env(safe-area-inset-bottom))] sm:pb-10 pt-4 sm:pt-6 px-5 sm:px-6 md:px-10 max-w-2xl mx-auto w-full flex items-center justify-between bg-background/95 backdrop-blur-md border-t border-border/40 sm:border-t-0">
         <button
           onClick={goBack}
           disabled={currentStep === 0}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-0 disabled:pointer-events-none text-[11px] uppercase tracking-[0.22em]"
+          className="min-h-11 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-0 disabled:pointer-events-none text-[11px] uppercase tracking-[0.22em]"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           Back
@@ -198,7 +198,7 @@ const OnboardingFlow = ({ onComplete }: Props) => {
         <button
           onClick={goNext}
           disabled={!canProceed()}
-          className="group flex items-center gap-3 rounded-full bg-primary text-primary-foreground px-8 py-3.5 text-[11px] uppercase tracking-[0.22em] disabled:opacity-30 transition-all hover:bg-primary/90 shadow-[0_10px_28px_-12px_hsl(var(--primary)/0.5)] hover:-translate-y-0.5"
+          className="group min-h-11 flex items-center gap-3 rounded-full bg-primary text-primary-foreground px-6 sm:px-8 py-3 text-[11px] uppercase tracking-[0.18em] sm:tracking-[0.22em] disabled:opacity-30 transition-all hover:bg-primary/90 shadow-[0_10px_28px_-12px_hsl(var(--primary)/0.5)] hover:-translate-y-0.5"
         >
           {currentStep === TOTAL_STEPS - 1 ? "Compose menu" : "Continue"}
           <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />

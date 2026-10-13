@@ -9,7 +9,7 @@ const Landing = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-background flex flex-col relative overflow-hidden">
       {/* Decorative background food elements */}
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-24 -right-24 w-[28rem] h-[28rem] rounded-full bg-citrus-soft/60 blur-3xl opacity-70" />
@@ -20,7 +20,7 @@ const Landing = () => {
         <Wine className="absolute bottom-[18%] right-[12%] w-9 h-9 text-berry/40" strokeWidth={1.25} />
       </div>
 
-      <header className="relative flex items-center justify-between px-6 md:px-10 py-5 sticky top-0 z-20 bg-background/70 backdrop-blur-md">
+      <header className="[padding-top:max(1rem,env(safe-area-inset-top))] relative flex items-center justify-between px-5 sm:px-6 md:px-10 pb-4 sm:py-5 sticky top-0 z-20 bg-background/70 backdrop-blur-md">
         <div className="flex items-center gap-3">
           <PokoAvatar size="sm" animate={false} />
           <span className="font-display text-lg tracking-tight text-foreground">Poko</span>
@@ -37,14 +37,14 @@ const Landing = () => {
       </header>
 
       <main className="flex-1 relative">
-        <section className="relative px-6 md:px-10 pt-8 md:pt-16 pb-20 md:pb-28">
+        <section className="relative px-5 sm:px-6 md:px-10 pt-6 sm:pt-8 md:pt-16 pb-14 sm:pb-20 md:pb-28">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             {/* Headline column */}
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="lg:col-span-5 space-y-10"
+              className="lg:col-span-5 space-y-7 sm:space-y-10"
             >
               <div className="inline-flex items-center gap-2 rounded-full bg-cream-warm/80 backdrop-blur-sm border border-border/40 px-4 py-1.5 shadow-[0_4px_20px_-8px_hsl(var(--shadow-warm)/0.15)]">
                 <Sparkles className="w-3 h-3 text-citrus" strokeWidth={2} />
@@ -52,7 +52,7 @@ const Landing = () => {
                   Your hosting little secret
                 </p>
               </div>
-              <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-normal text-foreground leading-[1.02] tracking-tight">
+              <h1 className="font-display text-[2.75rem] min-[390px]:text-5xl md:text-6xl lg:text-7xl font-normal text-foreground leading-[1.02] tracking-tight">
                 Tonight&rsquo;s dinner,
                 <br />
                 <span className="italic text-primary">already</span> under control.
@@ -65,7 +65,7 @@ const Landing = () => {
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 pt-2">
                 <button
                   onClick={() => navigate("/new")}
-                  className="group inline-flex items-center gap-3 rounded-full bg-primary text-primary-foreground px-8 py-4 text-xs uppercase tracking-[0.22em] hover:bg-primary/90 transition-all duration-300 shadow-[0_12px_32px_-10px_hsl(var(--primary)/0.5)] hover:shadow-[0_18px_40px_-10px_hsl(var(--primary)/0.55)] hover:-translate-y-0.5"
+                  className="group min-h-12 w-full sm:w-auto inline-flex items-center justify-center gap-3 rounded-full bg-primary text-primary-foreground px-6 sm:px-8 py-4 text-xs uppercase tracking-[0.18em] sm:tracking-[0.22em] hover:bg-primary/90 transition-all duration-300 shadow-[0_12px_32px_-10px_hsl(var(--primary)/0.5)] hover:shadow-[0_18px_40px_-10px_hsl(var(--primary)/0.55)] hover:-translate-y-0.5"
                 >
                   Plan tonight&rsquo;s dinner
                   <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
@@ -117,9 +117,9 @@ const Landing = () => {
         </section>
 
         {/* Quiet value props */}
-        <section className="relative px-6 md:px-10 py-20 md:py-28">
+        <section className="relative px-5 sm:px-6 md:px-10 py-14 sm:py-20 md:py-28">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-14 md:mb-20 space-y-4">
+            <div className="text-center mb-10 sm:mb-14 md:mb-20 space-y-4">
               <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground">How Poko helps</p>
               <h2 className="font-display text-3xl md:text-4xl lg:text-5xl text-foreground leading-[1.05]">
                 The quiet bits, <span className="italic text-accent">handled</span>.
@@ -182,9 +182,9 @@ const Landing = () => {
         </section>
 
         {/* Closing CTA */}
-        <section className="relative px-6 md:px-10 py-24 md:py-32">
+        <section className="relative px-5 sm:px-6 md:px-10 py-14 sm:py-24 md:py-32">
           <div className="max-w-3xl mx-auto relative">
-            <div className="relative bg-gradient-to-br from-cream-warm via-cream to-sage-soft/40 rounded-[36px] p-12 md:p-20 text-center border border-border/40 shadow-[0_30px_80px_-30px_hsl(var(--shadow-warm)/0.35)] overflow-hidden">
+            <div className="relative bg-gradient-to-br from-cream-warm via-cream to-sage-soft/40 rounded-[28px] sm:rounded-[36px] px-6 py-12 sm:p-12 md:p-20 text-center border border-border/40 shadow-[0_30px_80px_-30px_hsl(var(--shadow-warm)/0.35)] overflow-hidden">
               {/* Decorative icons */}
               <Citrus className="absolute top-8 left-8 w-8 h-8 text-citrus/50 -rotate-12" strokeWidth={1.25} />
               <Wine className="absolute bottom-10 right-10 w-8 h-8 text-berry/50 rotate-6" strokeWidth={1.25} />
@@ -202,7 +202,7 @@ const Landing = () => {
                 </p>
                 <button
                   onClick={() => navigate("/new")}
-                  className="group inline-flex items-center gap-3 rounded-full bg-primary text-primary-foreground px-10 py-4 text-xs uppercase tracking-[0.22em] hover:bg-primary/90 transition-all duration-300 shadow-[0_14px_36px_-12px_hsl(var(--primary)/0.55)] hover:-translate-y-0.5"
+                  className="group min-h-12 w-full sm:w-auto inline-flex items-center justify-center gap-3 rounded-full bg-primary text-primary-foreground px-8 sm:px-10 py-4 text-xs uppercase tracking-[0.22em] hover:bg-primary/90 transition-all duration-300 shadow-[0_14px_36px_-12px_hsl(var(--primary)/0.55)] hover:-translate-y-0.5"
                 >
                   Plan an evening
                   <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
@@ -213,12 +213,12 @@ const Landing = () => {
         </section>
       </main>
 
-      <footer className="relative px-6 md:px-10 py-8 border-t border-border/40">
+      <footer className="relative px-5 sm:px-6 md:px-10 pt-6 sm:py-8 [padding-bottom:max(1.5rem,env(safe-area-inset-bottom))] border-t border-border/40">
         <div className="max-w-7xl mx-auto flex items-center justify-between text-[10px] uppercase tracking-[0.32em] text-muted-foreground">
           <span className="flex items-center gap-2"><Sparkles className="w-3 h-3 text-citrus" strokeWidth={2} />Poko</span>
           <nav className="flex items-center gap-6">
-            <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
-            <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
+            <Link to="/privacy" className="min-h-11 flex items-center hover:text-foreground transition-colors">Privacy</Link>
+            <Link to="/terms" className="min-h-11 flex items-center hover:text-foreground transition-colors">Terms</Link>
           </nav>
         </div>
       </footer>

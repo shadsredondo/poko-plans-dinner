@@ -13,10 +13,10 @@ const presets = [
 ];
 
 const StepCuisine = ({ value, customValue, onChange, onCustomChange }: Props) => (
-  <div className="space-y-12">
+  <div className="space-y-8 sm:space-y-12">
     <div className="space-y-4">
       <p className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground">Direction</p>
-      <h1 className="font-display text-4xl md:text-5xl font-normal text-foreground leading-[1.05]">
+      <h1 className="font-display text-[2.25rem] sm:text-4xl md:text-5xl font-normal text-foreground leading-[1.05]">
         Where shall we travel tonight?
       </h1>
     </div>
@@ -27,7 +27,7 @@ const StepCuisine = ({ value, customValue, onChange, onCustomChange }: Props) =>
           key={opt.label}
           onClick={() => onChange(opt.label)}
           aria-pressed={value === opt.label}
-          className={`text-left px-6 py-6 transition-colors duration-300 ${
+          className={`min-h-20 text-left px-5 sm:px-6 py-4 sm:py-6 transition-colors duration-300 ${
             value === opt.label
               ? "bg-foreground text-background"
               : "bg-background hover:bg-muted"
@@ -44,7 +44,7 @@ const StepCuisine = ({ value, customValue, onChange, onCustomChange }: Props) =>
       <button
         onClick={() => onChange("custom")}
         aria-pressed={value === "custom"}
-        className={`text-left px-6 py-6 sm:col-span-2 transition-colors duration-300 ${
+        className={`min-h-20 text-left px-5 sm:px-6 py-4 sm:py-6 sm:col-span-2 transition-colors duration-300 ${
           value === "custom"
             ? "bg-foreground text-background"
             : "bg-background hover:bg-muted"
@@ -64,7 +64,7 @@ const StepCuisine = ({ value, customValue, onChange, onCustomChange }: Props) =>
         value={customValue}
         onChange={(e) => onCustomChange(e.target.value)}
         placeholder="e.g. Levantine, Nordic, Thai-Mexican…"
-        className="w-full bg-transparent border-0 border-b border-border px-0 py-3 font-display text-xl text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-foreground transition-colors"
+        className="w-full bg-transparent border-0 border-b border-border px-0 py-3 font-display text-base sm:text-xl text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-foreground transition-colors"
         autoFocus
       />
     )}

@@ -50,10 +50,10 @@ const StepIngredients = ({ value, onChange }: Props) => {
   };
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-8 sm:space-y-12">
       <div className="space-y-4">
         <p className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground">Pantry</p>
-        <h1 className="font-display text-4xl md:text-5xl font-normal text-foreground leading-[1.05]">
+        <h1 className="font-display text-[2.25rem] sm:text-4xl md:text-5xl font-normal text-foreground leading-[1.05]">
           What's already in your kitchen?
         </h1>
         <p className="text-sm text-muted-foreground italic">
@@ -68,13 +68,14 @@ const StepIngredients = ({ value, onChange }: Props) => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="chicken, tomatoes, garlic…"
-            className="flex-1 bg-transparent border-0 px-0 py-3 font-display text-xl text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
+            className="min-w-0 flex-1 bg-transparent border-0 px-0 py-3 font-display text-base sm:text-xl text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
           />
           {isSupported && (
             <button
               onClick={toggle}
               disabled={state === "processing"}
-              className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 ${
+              aria-label={state === "idle" ? "Start voice input" : state === "listening" ? "Stop voice input" : "Voice input"}
+              className={`relative flex items-center justify-center w-11 h-11 shrink-0 rounded-full transition-all duration-300 ${
                 state === "listening"
                   ? "bg-foreground text-background"
                   : state === "processing"
@@ -102,7 +103,7 @@ const StepIngredients = ({ value, onChange }: Props) => {
           <button
             onClick={addIngredient}
             disabled={!input.trim()}
-            className="text-foreground text-[11px] uppercase tracking-[0.22em] disabled:opacity-30 transition-opacity hover:text-accent"
+            className="min-h-11 px-1 text-foreground text-[11px] uppercase tracking-[0.18em] disabled:opacity-30 transition-opacity hover:text-accent"
           >
             Add
           </button>
@@ -133,7 +134,8 @@ const StepIngredients = ({ value, onChange }: Props) => {
                 {item}
                 <button
                   onClick={() => remove(item)}
-                  className="text-muted-foreground hover:text-accent transition-colors"
+                  aria-label={`Remove ${item}`}
+                  className="w-11 h-11 -my-3 -mr-3 flex items-center justify-center text-muted-foreground hover:text-accent transition-colors"
                 >
                   <X className="w-3 h-3" strokeWidth={1.5} />
                 </button>

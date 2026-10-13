@@ -75,10 +75,10 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="bg-card rounded-3xl border border-border/60 shadow-[0_10px_40px_-22px_hsl(var(--shadow-warm)/0.3)] p-5 md:p-7"
+      className="bg-card rounded-2xl sm:rounded-3xl border border-border/60 shadow-[0_10px_40px_-22px_hsl(var(--shadow-warm)/0.3)] p-3 sm:p-5 md:p-7"
     >
       {/* Header */}
-      <div className="flex flex-wrap items-center gap-4 mb-2">
+      <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-2">
         <div className="w-10 h-10 rounded-full bg-sage-soft flex items-center justify-center">
           <CalendarClock className="w-5 h-5 text-primary" strokeWidth={1.75} />
         </div>
@@ -92,7 +92,7 @@ const MenuResults = ({ menu }: { menu: MenuData }) => {
         </div>
 
         {totalSavings > 0 && (
-          <div className="ml-auto flex items-center gap-2 rounded-full bg-secondary/50 border border-secondary/60 pl-3 pr-5 py-2">
+          <div className="w-full sm:w-auto sm:ml-auto flex items-center gap-2 rounded-2xl sm:rounded-full bg-secondary/50 border border-secondary/60 pl-3 pr-5 py-2">
             <span className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
               <PiggyBank className="w-4 h-4 text-secondary-foreground" strokeWidth={1.75} />
             </span>

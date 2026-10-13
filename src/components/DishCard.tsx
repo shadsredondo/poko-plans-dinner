@@ -87,7 +87,7 @@ const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
       transition={{ delay: 0.05 + index * 0.06, ease: [0.22, 1, 0.36, 1], duration: 0.5 }}
       className="relative"
     >
-      <div className="grid grid-cols-[88px_56px_1fr_auto] items-center gap-x-4 py-4">
+      <div className="grid grid-cols-[64px_1fr_auto] sm:grid-cols-[88px_56px_1fr_auto] items-center gap-x-3 sm:gap-x-4 py-4">
         {/* Time-before column with dotted timeline */}
         <div className="relative flex flex-col items-center justify-center">
           {/* timeline line */}
@@ -98,7 +98,7 @@ const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
             />
           )}
           {/* timeline dot */}
-          <span className={`absolute -left-3 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full ${cat.dotBg} ring-4 ring-background`} />
+          <span className={`absolute -left-1 sm:-left-3 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full ${cat.dotBg} ring-4 ring-background`} />
           <div className="text-center leading-tight">
             <div className="text-[11px] font-semibold tracking-[0.18em] text-foreground/80">{before.top}</div>
             {before.bottom && (
@@ -108,7 +108,7 @@ const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
         </div>
 
         {/* Icon tile */}
-        <div className={`w-14 h-14 rounded-2xl ${cat.tileBg} flex items-center justify-center shadow-[0_6px_18px_-10px_hsl(var(--shadow-warm)/0.35)]`}>
+        <div className={`hidden sm:flex w-14 h-14 rounded-2xl ${cat.tileBg} items-center justify-center shadow-[0_6px_18px_-10px_hsl(var(--shadow-warm)/0.35)]`}>
           <CatIcon className={`w-6 h-6 ${cat.tileText}`} strokeWidth={1.75} />
         </div>
 
@@ -126,25 +126,26 @@ const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
         </div>
 
         {/* Right cluster: play, expand, savings */}
-        <div className="flex items-center gap-3 md:gap-4">
+        <div className="flex items-center gap-1 sm:gap-3 md:gap-4">
           {video && (
             <button
               onClick={() => setVideoOpen(true)}
               aria-label="Watch recipe video"
               title="Watch recipe video"
-              className="w-10 h-10 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center shadow-[0_6px_16px_-8px_hsl(var(--secondary)/0.9)] hover:scale-105 transition-transform"
+              className="w-11 h-11 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center shadow-[0_6px_16px_-8px_hsl(var(--secondary)/0.9)] hover:scale-105 transition-transform"
             >
               <Play className="w-4 h-4 fill-current ml-0.5" strokeWidth={0} />
             </button>
           )}
           <button
             onClick={() => setExpanded((v) => !v)}
-            aria-label="Show details"
-            className="w-7 h-7 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted flex items-center justify-center transition-colors"
+            aria-label={expanded ? "Hide details" : "Show details"}
+            aria-expanded={expanded}
+            className="w-11 h-11 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted flex items-center justify-center transition-colors"
           >
             <ChevronDown className={`w-4 h-4 transition-transform ${expanded ? "rotate-180" : ""}`} />
           </button>
-          <div className="w-16 text-right" title="Estimated savings from using what you already have">
+          <div className="hidden sm:block w-16 text-right" title="Estimated savings from using what you already have">
             {dish.savings > 0 ? (
               <span className="text-[15px] font-medium text-berry">– ${dish.savings}</span>
             ) : (
@@ -154,13 +155,25 @@ const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
         </div>
       </div>
 
+      <div className="sm:hidden -mt-2 mb-3 ml-16 flex items-center justify-between gap-3">
+        <div className={`w-9 h-9 rounded-xl ${cat.tileBg} flex items-center justify-center`} aria-hidden>
+          <CatIcon className={`w-4 h-4 ${cat.tileText}`} strokeWidth={1.75} />
+        </div>
+        <div className="text-right" title="Estimated savings from using what you already have">
+          <span className={`text-[15px] font-medium ${dish.savings > 0 ? "text-berry" : "text-muted-foreground"}`}>
+            – ${dish.savings > 0 ? dish.savings : 0}
+          </span>
+          <span className="block text-[9px] uppercase tracking-[0.16em] text-muted-foreground">Est. savings</span>
+        </div>
+      </div>
+
       {/* Expanded details */}
       {expanded && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
-          className="ml-[148px] mr-2 mb-3 px-5 py-4 rounded-2xl bg-muted/40 border border-border/60 grid gap-3 md:grid-cols-2"
+          className="ml-0 sm:ml-[148px] sm:mr-2 mb-3 px-4 sm:px-5 py-4 rounded-2xl bg-muted/40 border border-border/60 grid gap-3 md:grid-cols-2"
         >
           {dish.reason && (
             <p className="text-[13px] text-foreground/85 leading-relaxed md:col-span-2">{dish.reason}</p>
@@ -178,7 +191,7 @@ const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
         </motion.div>
       )}
 
-      {!isLast && <div className="h-px bg-border/50 ml-[148px]" />}
+      {!isLast && <div className="h-px bg-border/50 ml-16 sm:ml-[148px]" />}
 
       {/* Video Modal */}
       {video && (
@@ -190,7 +203,7 @@ const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
           }}
         >
           <DialogContent
-            className="sm:max-w-2xl p-0 overflow-hidden border-border"
+            className="w-[calc(100%-2rem)] max-h-[calc(100dvh-2rem)] sm:max-w-2xl p-0 overflow-y-auto border-border rounded-2xl"
             // Keep focus out of the YouTube iframe so Escape closes the dialog.
             onOpenAutoFocus={(e) => {
               e.preventDefault();
@@ -198,7 +211,7 @@ const DishCard = ({ dish, video, index, isLast = false }: DishCardProps) => {
             }}
           >
             <DialogHeader className="px-6 pt-6 pb-3">
-              <DialogTitle className="font-display text-xl font-normal truncate">{dish.dish}</DialogTitle>
+              <DialogTitle className="font-display text-xl font-normal leading-snug pr-8">{dish.dish}</DialogTitle>
             </DialogHeader>
             <div className="aspect-video w-full relative bg-muted">
               {!videoLoaded && (

@@ -40,8 +40,8 @@ const Index = () => {
   const cuisineVal = onboardingData?.cuisine === "custom" ? onboardingData.customCuisine : onboardingData?.cuisine || "";
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <header className="flex items-center justify-between px-6 md:px-10 py-5 border-b border-border/60 bg-background/90 backdrop-blur-md sticky top-0 z-20">
+    <div className="min-h-[100dvh] bg-background flex flex-col">
+      <header className="[padding-top:max(0.75rem,env(safe-area-inset-top))] flex items-center justify-between px-4 sm:px-6 md:px-10 pb-3 sm:py-5 border-b border-border/60 bg-background/90 backdrop-blur-md sticky top-0 z-20">
         <div className="flex items-center gap-4">
           <PokoAvatar size="sm" animate={false} />
           <span className="font-display text-lg tracking-tight text-foreground">Poko</span>
@@ -58,7 +58,7 @@ const Index = () => {
         <div className="flex items-center gap-5">
           <button
             onClick={handleReset}
-            className="text-muted-foreground hover:text-foreground transition-colors text-xs uppercase tracking-[0.18em] flex items-center gap-2"
+            className="w-11 h-11 sm:w-auto sm:h-auto sm:px-0 text-muted-foreground hover:text-foreground transition-colors text-xs uppercase tracking-[0.18em] flex items-center justify-center gap-2"
             title="Start over"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -68,7 +68,7 @@ const Index = () => {
         </div>
       </header>
 
-      <div className="flex-1 overflow-y-auto px-6 md:px-10 py-12 space-y-8 max-w-2xl mx-auto w-full">
+      <div className="flex-1 overflow-y-auto px-3 sm:px-6 md:px-10 pt-6 sm:py-12 [padding-bottom:max(1.5rem,env(safe-area-inset-bottom))] space-y-8 max-w-2xl mx-auto w-full">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
           <MenuResults menu={menu} />
           <SaveMenuNudge

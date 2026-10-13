@@ -10,10 +10,10 @@ const options = [
 ];
 
 const StepSkill = ({ value, onChange }: Props) => (
-  <div className="space-y-12">
+  <div className="space-y-8 sm:space-y-12">
     <div className="space-y-4">
       <p className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground">Hand</p>
-      <h1 className="font-display text-4xl md:text-5xl font-normal text-foreground leading-[1.05]">
+      <h1 className="font-display text-[2.25rem] sm:text-4xl md:text-5xl font-normal text-foreground leading-[1.05]">
         How well do you cook?
       </h1>
     </div>
@@ -23,11 +23,11 @@ const StepSkill = ({ value, onChange }: Props) => (
           key={opt.value}
           onClick={() => onChange(opt.value)}
           aria-pressed={value === opt.value}
-          className={`w-full text-left flex items-baseline justify-between gap-6 py-6 border-b border-border transition-colors group ${
+          className={`w-full min-h-20 text-left flex items-start sm:items-baseline justify-between gap-3 sm:gap-6 py-4 sm:py-6 border-b border-border transition-colors group ${
             value === opt.value ? "bg-muted/50" : "hover:bg-muted/30"
           }`}
         >
-          <div className="flex items-baseline gap-6 px-2">
+          <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-6 px-2">
             <span className={`font-display text-2xl transition-colors ${
               value === opt.value ? "text-foreground" : "text-foreground/70 group-hover:text-foreground"
             }`}>
