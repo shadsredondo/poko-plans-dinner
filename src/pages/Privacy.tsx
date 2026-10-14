@@ -1,7 +1,7 @@
 import LegalPage, { LegalSection, CONTACT_EMAIL } from "@/components/LegalPage";
 
 const Privacy = () => (
-  <LegalPage title="Privacy Policy" updated="October 8, 2026">
+  <LegalPage title="Privacy Policy" updated="October 14, 2026">
     <p className="text-[15px] leading-relaxed text-muted-foreground">
       Poko is a small, independent app that plans dinner menus. This page explains what we collect, why, and
       what you can do about it. We don't sell your data and we don't show ads.
@@ -24,6 +24,11 @@ const Privacy = () => (
         <strong className="text-foreground">Small browser storage.</strong> Your browser keeps your sign-in
         session and a few preferences in local storage. We don't use advertising or analytics cookies.
       </p>
+      <p>
+        <strong className="text-foreground">Anonymous website analytics.</strong> We use Vercel Web Analytics
+        to understand aggregate traffic, such as pages visited, referring sites, general location, device type,
+        operating system and browser. It does not use cookies or associate this information with your account.
+      </p>
     </LegalSection>
 
     <LegalSection heading="Who processes it">
@@ -38,7 +43,10 @@ const Privacy = () => (
           <strong className="text-foreground">YouTube</strong> finds and plays recipe videos. When you play one,
           YouTube's own privacy policy applies.
         </li>
-        <li><strong className="text-foreground">Vercel</strong> hosts the website.</li>
+        <li>
+          <strong className="text-foreground">Vercel</strong> hosts the website and provides privacy-focused,
+          anonymous website analytics.
+        </li>
         <li><strong className="text-foreground">Google</strong> handles "Continue with Google" sign-in.</li>
       </ul>
     </LegalSection>
